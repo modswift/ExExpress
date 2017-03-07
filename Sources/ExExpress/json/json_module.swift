@@ -6,6 +6,7 @@
 //  Copyright © 2016 ZeeZide GmbH. All rights reserved.
 //
 
+import struct Foundation.Data
 @_exported import Freddy
   // we cannot type-alias the extensions, which is why we need the full export
 
@@ -20,8 +21,7 @@ public extension JSON {
     guard !string.isEmpty else { return nil }
     
     do {
-      var parser = JSONParser(string: string)
-      return try parser.parse()
+      return try JSONParser.parse(string)
     }
     catch let error {
       // Not using console.error to avoid the (big) dependency.
@@ -35,10 +35,10 @@ public extension JSON {
     // content-type: application/json ...
     guard !utf8.isEmpty else { return nil }
     
-    do {
+    do {      
       let obj : JSON = try utf8.withUnsafeBufferPointer { p in
-        var parser = JSONParser(buffer: p, owner: utf8)
-        return try parser.parse()
+        let data = Data(buffer: p)
+        return try JSONParser.parse(utf8: data)
       }
       return obj
     }

@@ -6,6 +6,7 @@
 //  Copyright © 2016 ZeeZide GmbH. All rights reserved.
 //
 
+import struct Foundation.Data
 
 public class JsonFileModule {
   
@@ -25,8 +26,8 @@ public class JsonFileModule {
       
       do {
         let obj : JSON = try utf8.withUnsafeBufferPointer { p in
-          var parser = JSONParser(buffer: p, owner: utf8)
-          return try parser.parse()
+          let data = Data(buffer: p)
+          return try JSONParser.parse(utf8: data)
         }
         cb(nil, obj)
       }
@@ -49,8 +50,8 @@ public class JsonFileModule {
     // and parse synchronously
     do {
       let obj : JSON = try utf8.withUnsafeBufferPointer { p in
-        var parser = JSONParser(buffer: p, owner: utf8)
-        return try parser.parse()
+        let data = Data(buffer: p)
+        return try JSONParser.parse(utf8: data)
       }
       return obj
     }
