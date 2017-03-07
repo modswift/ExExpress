@@ -9,13 +9,12 @@ let package = Package(
 	  .Package(url: "https://github.com/AlwaysRightInstitute/mustache.git", 
 		         majorVersion: 0, minor: 5),
     
-#if true             
  	  .Package(url: "https://github.com/modswift/Freddy.git", 
  		         majorVersion: 3, minor: 0)
-#else fails on Linux
+    /* 3.0.2 fails on Linux
 	  .Package(url: "https://github.com/bignerdranch/Freddy.git",
 						 majorVersion: 3, minor: 0),
-#endif
+     */
   ],
 	
 	exclude: [
