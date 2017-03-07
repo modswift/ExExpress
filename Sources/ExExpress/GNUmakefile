@@ -1,10 +1,5 @@
-# this is just a fake makefile which dispatches to the top
+# GNUmakefile
 
-all :
-	@$(MAKE) -C .. all
+PACKAGE_DIR=../..
 
-clean :
-	@$(MAKE) -C .. clean
-
-distclean :
-	@$(MAKE) -C .. distclean
+include $(PACKAGE_DIR)/xcconfig/rules.make
