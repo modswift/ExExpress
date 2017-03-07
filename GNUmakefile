@@ -1,7 +1,6 @@
 # GNUmakefile
 
 PACKAGE_DIR=.
-debug=on
 
 include $(PACKAGE_DIR)/xcconfig/config.make
 
