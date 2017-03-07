@@ -9,7 +9,7 @@
 
 public class JsonFileModule {
   
-  public enum Error : SwiftError {
+  public enum Error : Swift.Error {
     case GotNoData
   }
   
@@ -17,7 +17,7 @@ public class JsonFileModule {
   // MARK: - Reading
   
   public func readFile(_ path: String,
-                       cb: @escaping ( SwiftError?, JSON? ) -> Void)
+                       cb: @escaping ( Swift.Error?, JSON? ) -> Void)
   {
     fs.readFile(path) { err, bytes in
       guard err == nil       else { cb(err,             nil); return }

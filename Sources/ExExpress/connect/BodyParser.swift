@@ -19,7 +19,7 @@ public enum BodyParserBody {
   
   case NotParsed
   case NoBody // IsPerfect
-  case Error(SwiftError)
+  case Error(Swift.Error)
   
   case URLEncoded(Dictionary<String, Any>)
   
