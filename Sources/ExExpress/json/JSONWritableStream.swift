@@ -67,10 +67,10 @@ public extension WritableByteStreamType {
     // FIXME: This should be an on-demand stream
     
     switch o {
-      case .Int   (let v): try write("\(v)")
-      case .String(let v): try writeJSON(string: v)
+      case .int   (let v): try write("\(v)")
+      case .string(let v): try writeJSON(string: v)
       
-      case .Array(let children):
+      case .array(let children):
         try writev(buckets: brigades.arrayOpen, done: nil)
         do {
           var isFirst = true
@@ -83,7 +83,7 @@ public extension WritableByteStreamType {
         }
         try  writev(buckets: brigades.arrayClose, done: nil)
       
-      case .Dictionary(let object):
+      case .dictionary(let object):
         try  writev(buckets: brigades.dictOpen, done: nil)
         do {
           var isFirst = true
@@ -99,13 +99,13 @@ public extension WritableByteStreamType {
         }
         try  writev(buckets: brigades.dictClose, done: nil)
       
-      case .Double(let v):
+      case .double(let v):
         try  write("\(v)") // FIXME: quite likely wrong
           
-      case .Bool(let v):
+      case .bool(let v):
         try  writev(buckets: v ? brigades.jtrue : brigades.jfalse, done: nil)
           
-      case .Null:
+      case .null:
         try  writev(buckets: brigades.jnull, done: nil)
     }
   }
@@ -125,7 +125,7 @@ extension Array: JSONEncodable {
         return String(describing: v).toJSON()
       }
     }
-    return .Array(arrayOfJSON)
+    return .array(arrayOfJSON)
   }
 }
 
@@ -145,7 +145,7 @@ extension Dictionary: JSONEncodable { // hh
       }
     }
     
-    return .Dictionary(jsonDictionary)
+    return .dictionary(jsonDictionary)
   }
   
 }

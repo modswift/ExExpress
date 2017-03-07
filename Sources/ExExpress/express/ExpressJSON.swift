@@ -40,7 +40,7 @@ public extension ServerResponse {
       }
     }
     else {
-      try json(.Null)
+      try json(.null)
     }
   }
 }

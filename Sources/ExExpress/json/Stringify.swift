@@ -22,7 +22,7 @@ public extension JSON {
       return encodable.toJSON().toString()
     }
     
-    return JSON.String("\(o)").toString()
+    return JSON.string("\(o)").toString()
   }
   
   public func toString() -> Swift.String {
@@ -68,10 +68,10 @@ public extension String {
   
   public mutating func appendJSON(object o: JSON) {
     switch o {
-      case .Int   (let v): self += "\(v)"
-      case .String(let v): appendJSON(string: v)
+      case .int   (let v): self += "\(v)"
+      case .string(let v): appendJSON(string: v)
       
-      case .Array(let children):
+      case .array(let children):
         self += "[ "
         do {
           var isFirst = true
@@ -84,7 +84,7 @@ public extension String {
         }
         self += " ]"
       
-      case .Dictionary(let object):
+      case .dictionary(let object):
         self += "{ "
         do {
           var isFirst = true
@@ -100,13 +100,13 @@ public extension String {
         }
         self += " }"
       
-      case .Double(let v):
+      case .double(let v):
         self += "\(v)" // FIXME: quite likely wrong
           
-      case .Bool(let v):
+      case .bool(let v):
         self += v ? "true" : "false"
       
-      case .Null:
+      case .null:
         self += "null"
     }
   }
