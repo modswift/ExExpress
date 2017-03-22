@@ -7,8 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		E82359B31E49F306000B3120 /* libFreddy.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E82359351E49F0E4000B3120 /* libFreddy.dylib */; };
-		E82359B41E49F306000B3120 /* libmustache.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E82359381E49F0E4000B3120 /* libmustache.dylib */; };
 		E8AFFF5D1E6F19260074266E /* time.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8AFFF5A1E6F19260074266E /* time.swift */; };
 		E8AFFF5E1E6F19260074266E /* timespec.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8AFFF5B1E6F19260074266E /* timespec.swift */; };
 		E8AFFF5F1E6F19260074266E /* timeval_any.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8AFFF5C1E6F19260074266E /* timeval_any.swift */; };
@@ -55,43 +53,12 @@
 		E8AFFFBA1E6F1B6C0074266E /* Pause.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8AFFFB31E6F1B6C0074266E /* Pause.swift */; };
 		E8AFFFBB1E6F1B6C0074266E /* Session.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8AFFFB41E6F1B6C0074266E /* Session.swift */; };
 		E8AFFFBD1E6F1B780074266E /* TypeIs.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8AFFFBC1E6F1B780074266E /* TypeIs.swift */; };
+		E8BCF0601E82CA1900F235C8 /* Freddy.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E8BCF05E1E82CA1900F235C8 /* Freddy.framework */; };
+		E8BCF0611E82CA1900F235C8 /* libmustache.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E8BCF05F1E82CA1900F235C8 /* libmustache.dylib */; };
 /* End PBXBuildFile section */
-
-/* Begin PBXContainerItemProxy section */
-		E82359341E49F0E4000B3120 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = E823592D1E49F0E3000B3120 /* Freddy.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = E83AF8E81E3E40420039F300;
-			remoteInfo = Freddy;
-		};
-		E82359371E49F0E4000B3120 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = E82359301E49F0E4000B3120 /* mustache.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = E83AF8F81E3E40500039F300;
-			remoteInfo = mustache;
-		};
-		E82359AF1E49F300000B3120 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = E823592D1E49F0E3000B3120 /* Freddy.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = E83AF8E71E3E40420039F300;
-			remoteInfo = Freddy;
-		};
-		E82359B11E49F300000B3120 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = E82359301E49F0E4000B3120 /* mustache.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = E83AF8F71E3E40500039F300;
-			remoteInfo = mustache;
-		};
-/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		E82359181E49F02C000B3120 /* libExExpress.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libExExpress.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
-		E823592D1E49F0E3000B3120 /* Freddy.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Freddy.xcodeproj; path = ../Freddy/Freddy.xcodeproj; sourceTree = "<group>"; };
-		E82359301E49F0E4000B3120 /* mustache.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = mustache.xcodeproj; path = ../mustache/mustache.xcodeproj; sourceTree = "<group>"; };
 		E82359B51E49F311000B3120 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		E8AFFF5A1E6F19260074266E /* time.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = time.swift; path = Sources/ExExpress/xsys/time.swift; sourceTree = SOURCE_ROOT; };
 		E8AFFF5B1E6F19260074266E /* timespec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = timespec.swift; path = Sources/ExExpress/xsys/timespec.swift; sourceTree = SOURCE_ROOT; };
@@ -144,6 +111,8 @@
 		E8AFFFB31E6F1B6C0074266E /* Pause.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Pause.swift; path = Sources/ExExpress/connect/Pause.swift; sourceTree = SOURCE_ROOT; };
 		E8AFFFB41E6F1B6C0074266E /* Session.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Session.swift; path = Sources/ExExpress/connect/Session.swift; sourceTree = SOURCE_ROOT; };
 		E8AFFFBC1E6F1B780074266E /* TypeIs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TypeIs.swift; path = Sources/ExExpress/connect/TypeIs.swift; sourceTree = SOURCE_ROOT; };
+		E8BCF05E1E82CA1900F235C8 /* Freddy.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Freddy.framework; path = ../../../../dev/Swift/Freddy/build/Debug/Freddy.framework; sourceTree = "<group>"; };
+		E8BCF05F1E82CA1900F235C8 /* libmustache.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libmustache.dylib; path = "../../../../Library/Developer/Xcode/DerivedData/ExExpress-hcfwxpckgrptppdjjbzyjyvgvcgw/Build/Products/Debug/libmustache.dylib"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -151,8 +120,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E82359B31E49F306000B3120 /* libFreddy.dylib in Frameworks */,
-				E82359B41E49F306000B3120 /* libmustache.dylib in Frameworks */,
+				E8BCF0601E82CA1900F235C8 /* Freddy.framework in Frameworks */,
+				E8BCF0611E82CA1900F235C8 /* libmustache.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -167,6 +136,7 @@
 				E82359281E49F066000B3120 /* Configurations */,
 				E823593D1E49F0F3000B3120 /* ThirdParty */,
 				E82359191E49F02C000B3120 /* Products */,
+				E8BCF05D1E82CA1900F235C8 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -204,27 +174,9 @@
 			name = Sources;
 			sourceTree = "<group>";
 		};
-		E823592E1E49F0E3000B3120 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				E82359351E49F0E4000B3120 /* libFreddy.dylib */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		E82359311E49F0E4000B3120 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				E82359381E49F0E4000B3120 /* libmustache.dylib */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		E823593D1E49F0F3000B3120 /* ThirdParty */ = {
 			isa = PBXGroup;
 			children = (
-				E823592D1E49F0E3000B3120 /* Freddy.xcodeproj */,
-				E82359301E49F0E4000B3120 /* mustache.xcodeproj */,
 			);
 			name = ThirdParty;
 			sourceTree = "<group>";
@@ -366,6 +318,15 @@
 			name = Middleware;
 			sourceTree = "<group>";
 		};
+		E8BCF05D1E82CA1900F235C8 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				E8BCF05E1E82CA1900F235C8 /* Freddy.framework */,
+				E8BCF05F1E82CA1900F235C8 /* libmustache.dylib */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -390,8 +351,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				E82359B01E49F300000B3120 /* PBXTargetDependency */,
-				E82359B21E49F300000B3120 /* PBXTargetDependency */,
 			);
 			name = ExExpress;
 			productName = ExExpress;
@@ -423,39 +382,12 @@
 			mainGroup = E823590F1E49F02C000B3120;
 			productRefGroup = E82359191E49F02C000B3120 /* Products */;
 			projectDirPath = "";
-			projectReferences = (
-				{
-					ProductGroup = E823592E1E49F0E3000B3120 /* Products */;
-					ProjectRef = E823592D1E49F0E3000B3120 /* Freddy.xcodeproj */;
-				},
-				{
-					ProductGroup = E82359311E49F0E4000B3120 /* Products */;
-					ProjectRef = E82359301E49F0E4000B3120 /* mustache.xcodeproj */;
-				},
-			);
 			projectRoot = "";
 			targets = (
 				E82359171E49F02C000B3120 /* ExExpress */,
 			);
 		};
 /* End PBXProject section */
-
-/* Begin PBXReferenceProxy section */
-		E82359351E49F0E4000B3120 /* libFreddy.dylib */ = {
-			isa = PBXReferenceProxy;
-			fileType = "compiled.mach-o.dylib";
-			path = libFreddy.dylib;
-			remoteRef = E82359341E49F0E4000B3120 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		E82359381E49F0E4000B3120 /* libmustache.dylib */ = {
-			isa = PBXReferenceProxy;
-			fileType = "compiled.mach-o.dylib";
-			path = libmustache.dylib;
-			remoteRef = E82359371E49F0E4000B3120 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-/* End PBXReferenceProxy section */
 
 /* Begin PBXSourcesBuildPhase section */
 		E82359141E49F02C000B3120 /* Sources */ = {
@@ -512,19 +444,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		E82359B01E49F300000B3120 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = Freddy;
-			targetProxy = E82359AF1E49F300000B3120 /* PBXContainerItemProxy */;
-		};
-		E82359B21E49F300000B3120 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = mustache;
-			targetProxy = E82359B11E49F300000B3120 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		E823591A1E49F02C000B3120 /* Debug */ = {
