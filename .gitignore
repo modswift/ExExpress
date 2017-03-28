@@ -81,3 +81,5 @@ Release
 *.o
 Packages
 
+Package.pins
+

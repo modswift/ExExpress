@@ -65,7 +65,12 @@ public extension ConsoleType { // Actual logging funcs
   
   public func dir(_ obj: Any?) {
     // TODO: implement more
-    log("\(obj)")
+    if let obj = obj {
+      log("\(obj)")
+    }
+    else {
+      log("<nil>")
+    }
   }
 }
 
@@ -99,8 +104,11 @@ func writeValues<T: GWritableStreamType>(to t: T, _ values : [ Any? ]) throws
     else if let v = v as? String {
       bucket = Array<UInt8>(v.utf8)
     }
-    else {
+    else if let v = v {
       bucket = Array<UInt8>("\(v)".utf8)
+    }
+    else {
+      bucket = Array<UInt8>("<nil>".utf8)
     }
     try t.writev(buckets: [ bucket ], done: nil)
   }
