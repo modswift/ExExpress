@@ -40,6 +40,7 @@ private let debugMatcher  = false
  * and companions.
  */
 public struct Route: MiddlewareObject {
+  // TODO: could be a RouteKeeper, but does it make sense?
   
   public enum Pattern {
     case Root
