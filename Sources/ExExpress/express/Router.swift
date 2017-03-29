@@ -6,11 +6,22 @@
 //  Copyright © 2016 ZeeZide GmbH. All rights reserved.
 //
 
-open class Router: MiddlewareObject {
+/**
+ * A Middleware which keeps and runs an array of Route objects.
+ *
+ * Note: The is also the RouteKeeper protocol which has all the nice `use()`,
+ *       `get` etc methods.
+ *
+ * Note: You don't have to create a Router object manually, the Express app
+ *       object has a main router object you can use (and implements
+ *       RouteKeeper enabling all the `get`, `use`, etc hook-methods).
+ */
+open class Router: MiddlewareObject, RouteKeeper {
+  // TBD: could be a struct?
   
-  var routes = [Route]()
+  var routes = [ Route ]()
   
-  func add(route e: Route) {
+  public func add(route e: Route) {
     routes.append(e)
   }
   
