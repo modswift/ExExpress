@@ -9,6 +9,36 @@
 private let patternMarker : UInt8 = 58 // ':'
 private let debugMatcher  = false
 
+/**
+ * A Route is a middleware which wraps another middleware and guards it by a
+ * condition. For example:
+ *
+ *     app.get("/index") { req, res, next in ... }
+ *
+ * This creates a Route wrapping the closure given. It only runs the
+ * embedded closure if:
+ * - the method of the request is 'GET'
+ * - the request path is equal to "/index"
+ * In all other cases it immediately calls the `next` handler.
+ *
+ * ## Path Patterns
+ *
+ * The Route accepts a pattern for the path:
+ * - the "*" string is considered a match-all.
+ * - otherwise the string is split into path components (on '/')
+ * - if it starts with a "/", the pattern will start with a Root symbol
+ * - "*" (like in `/users/ * / view`) matches any component (spaces added)
+ * - if the component starts with `:`, it is considered a variable.
+ *   Example: `/users/:id/view`
+ * - "text*", "*text*", "*text" creates hasPrefix/hasSuffix/contains patterns
+ * - otherwise the text is matched AS IS
+ *
+ * Variables can be extracted using:
+ *
+ *     req.params[int: "id"]
+ *
+ * and companions.
+ */
 public struct Route: MiddlewareObject {
   
   public enum Pattern {
@@ -196,6 +226,18 @@ public struct Route: MiddlewareObject {
   
 }
 
+/**
+ * Creates a pattern for a given 'url' string.
+ *
+ * - the "*" string is considered a match-all.
+ * - otherwise the string is split into path components (on '/')
+ * - if it starts with a "/", the pattern will start with a Root symbol
+ * - "*" (like in `/users/ * / view`) matches any component (spaces added)
+ * - if the component starts with `:`, it is considered a variable.
+ *   Example: `/users/:id/view`
+ * - "text*", "*text*", "*text" creates hasPrefix/hasSuffix/contains patterns
+ * - otherwise the text is matched AS IS
+ */
 func parseURLPattern(url s: String) -> [ Route.Pattern ]? {
   if s == "*" { return nil } // match-all
   
