@@ -28,7 +28,26 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "E81D11071E8EB70E0085B6E7"
+               BuildableName = "ExpressTests.xctest"
+               BlueprintName = "ExpressTests"
+               ReferencedContainer = "container:ExExpress.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
+      <MacroExpansion>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "E82359171E49F02C000B3120"
+            BuildableName = "libExExpress.dylib"
+            BlueprintName = "ExExpress"
+            ReferencedContainer = "container:ExExpress.xcodeproj">
+         </BuildableReference>
+      </MacroExpansion>
       <AdditionalOptions>
       </AdditionalOptions>
    </TestAction>
