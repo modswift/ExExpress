@@ -62,9 +62,23 @@ public extension ServerResponse {
 
         // TBD: maybe support a stream as a result? (result.pipe(res))
         let s = (result as? String) ?? "\(result)"
+
+        // Wow, this is harder than it looks when we want to consider a MIMEType
+        // object as a value :-)
+        var setContentType = true
+        if let oldType = res.getHeader("Content-Type") {
+          let s : String
+          if let oldType = oldType as? String {
+            s = oldType
+          }
+          else {
+            s = String(describing: oldType) // FIXME
+          }
+          setContentType = (s == "httpd/unix-directory") // a hack for Apache
+        }
         
-        if res.getHeader("Content-Type") == nil {
-          res.setHeader("Content-Type", "text/html; charset=utf-8")
+        if setContentType {
+          res.setHeader("Content-Type", detectTypeForContent(string: s))
         }
         
         res.writeHead(200)
@@ -74,6 +88,27 @@ public extension ServerResponse {
     }
   }
   
+}
+
+// TODO: move somewhere else
+fileprivate let typePrefixMap = [
+  ( "<!DOCTYPE html",  "text/html; charset=utf-8" ),
+  ( "<html",           "text/html; charset=utf-8" ),
+  ( "<?xml",           "text/xml;  charset=utf-8" ),
+  ( "BEGIN:VCALENDAR", "text/calendar; charset=utf-8" ),
+  ( "BEGIN:VCARD",     "text/vcard; charset=utf-8" )
+]
+
+fileprivate
+func detectTypeForContent(string: String,
+                          default: String = "text/html; charset=utf-8")
+     -> String
+{
+  // TODO: more clever detection? ;-)
+  for ( prefix, type ) in typePrefixMap {
+    if string.hasPrefix(prefix) { return type }
+  }
+  return `default`
 }
 
 private func lookupTemplate(views p: String, template t: String,
