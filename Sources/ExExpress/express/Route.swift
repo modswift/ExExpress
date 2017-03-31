@@ -39,10 +39,10 @@ private let debugMatcher  = false
  *
  * and companions.
  */
-public struct Route: MiddlewareObject {
+public struct Route: MiddlewareObject, CustomStringConvertible {
   // TODO: could be a RouteKeeper, but does it make sense?
   
-  public enum Pattern {
+  public enum Pattern : CustomStringConvertible {
     case Root
     case Text    (String)
     case Variable(String)
@@ -62,7 +62,21 @@ public struct Route: MiddlewareObject {
         case .Contains(let v): return s.contains(v)
       }
     }
+    
+    public var description : String {
+      switch self {
+        case .Root:             return "/"
+        case .Text(let v):      return v
+        case .Wildcard:         return "*"
+        case .Variable (let n): return ":\(n)"
+        case .Prefix(let v):    return "\(v)*"
+        case .Suffix(let v):    return "*\(v)"
+        case .Contains(let v):  return "*\(v)*"
+      }
+    }
   }
+  
+  let debug = false
   
   let middleware : [ Middleware ]
     // TBD: I think in Express.js, even the Route objects are middleware stack,
@@ -74,6 +88,36 @@ public struct Route: MiddlewareObject {
     // FIXME: all this works a little different in Express.js. Exact matches,
     //        non-path-component matches, regex support etc.
   
+  public var description : String {
+    var ms = "<Route:"
+    
+    var hadLimit = false
+    if let methods = methods, !methods.isEmpty {
+      ms += " "
+      ms += methods.joined(separator: ",")
+      hadLimit = true
+    }
+    if let pattern = urlPattern {
+      ms += " "
+      ms += pattern.map({$0.description}).joined(separator: "/")
+      hadLimit = true
+    }
+    if !hadLimit { ms += " *" }
+    
+    if middleware.isEmpty {
+      ms += " NO-middleware"
+    }
+    else if middleware.count > 1 {
+      ms += " #middleware=\(middleware.count)"
+    }
+    else {
+      ms += " mw"
+    }
+    
+    ms += ">"
+    return ms
+  }
+  
   public init(pattern: String?, method: String?, middleware: [Middleware]) {
     // FIXME: urlPrefix should be url or sth
     
@@ -83,6 +127,8 @@ public struct Route: MiddlewareObject {
     self.middleware = middleware
     
     self.urlPattern = pattern != nil ? parseURLPattern(url: pattern!) : nil
+
+    if debug { console.log("\(#function): setup route: \(self)") }
   }
   
   
@@ -92,8 +138,22 @@ public struct Route: MiddlewareObject {
                      response res: ServerResponse,
                      next     cb:  @escaping Next) throws
   {
-    guard matches(request: req)    else { return try cb() }
-    guard !self.middleware.isEmpty else { return try cb() }
+    let debug = self.debug
+    
+    guard matches(request: req)    else {
+      if debug {
+        console.log("\(#function): route does not match, next: \(self)")
+      }
+      return try cb()
+    }
+    guard !self.middleware.isEmpty else {
+      if debug {
+        console.log("\(#function): route has no middleware, next: \(self)")
+      }
+      return try cb()
+    }
+    
+    if debug { console.log("\(#function): route matches: \(self)") }
     
     // push route state
     let oldParams = req.params
@@ -103,11 +163,13 @@ public struct Route: MiddlewareObject {
     let endNext : Next = { _ in
       req.params = oldParams
       req.route  = oldRoute
+      if debug { console.log("\(#function): end-next: \(self)") }
       return try cb()
     }
     
     // loop over route middleware
     let stack = self.middleware
+    let count = stack.count // optimization ;->
     var next  : Next? = { _ in } // cannot be let as it's self-referencing
     
     var i = 0 // capture position in matching-middleware array (shared)
@@ -117,12 +179,24 @@ public struct Route: MiddlewareObject {
       // grab next item from middleware array
       let middleware = stack[i]
       i += 1 // this is shared between the blocks, move position in array
+
+      if debug {
+        if count == 1 {
+          console.log("\(#function): handle mw in: \(self)")
+        }
+        else {
+          console.log("\(#function): handle mw \(i)-of-\(count) in: \(self)")
+        }
+      }
       
       // call the middleware - which gets the handle to go to the 'next'
       // middleware. the latter can be the 'endNext'
-      let isLast = i == stack.count
+      let isLast = i == count
       try middleware(req, res, isLast ? endNext : next!)
-      if isLast { next = nil }
+      if isLast {
+        if debug { console.log("\(#function): last mw of: \(self)") }
+        next = nil
+      }
     }
     
     // inititate the traversal
