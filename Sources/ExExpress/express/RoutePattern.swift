@@ -125,8 +125,8 @@ enum RoutePattern : CustomStringConvertible {
     var matched = ""
     
     if debugMatcher {
-      print("MATCH: components: \(escapedPathComponents)\n" +
-            "  against: \(pattern)")
+      print("match: components: \(escapedPathComponents)\n" +
+            "       against:    \(pattern)")
     }
     
     // this is to support matching "/" against the "/*" ("", "*") pattern
@@ -164,10 +164,17 @@ enum RoutePattern : CustomStringConvertible {
         return nil
       }
       
-      matched += matchComponent
+      if i == 0 && matchComponent.isEmpty {
+        matched += "/"
+      }
+      else {
+        if matched != "/" { matched += "/" }
+        matched += matchComponent
+      }
       
       if debugMatcher {
-        print("  MATCHED[\(i)]: \(patternComponent) \(matchComponent)")
+        print("  comp matched[\(i)]: \(patternComponent) " +
+              "against '\(matchComponent)'")
       }
       
       // Special case, last component is a wildcard. Like /* or /todos/*. In
@@ -184,7 +191,9 @@ enum RoutePattern : CustomStringConvertible {
     }
 
     if debugMatcher {
-      console.log("MATCH: last was WC \(lastWasWildcard) EOL \(lastWasEOL)")
+      if lastWasWildcard || lastWasEOL {
+        print("MATCH: last was WC \(lastWasWildcard) EOL \(lastWasEOL)")
+      }
     }
     
     if escapedPathComponents.count > pattern.count {
@@ -193,7 +202,7 @@ enum RoutePattern : CustomStringConvertible {
     }
     
     if debugMatcher {
-      console.log("MATCHED:", matched)
+      print("  match: '\(matched)'")
     }
     return matched
   }
