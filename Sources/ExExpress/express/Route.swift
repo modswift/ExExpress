@@ -40,7 +40,6 @@ private let debugMatcher  = false
  * and companions.
  */
 public struct Route: MiddlewareObject, CustomStringConvertible {
-  // TODO: could be a RouteKeeper, but does it make sense?
   
   public enum Pattern : CustomStringConvertible {
     case Root
@@ -87,36 +86,6 @@ public struct Route: MiddlewareObject, CustomStringConvertible {
   let urlPattern : [ Pattern ]?
     // FIXME: all this works a little different in Express.js. Exact matches,
     //        non-path-component matches, regex support etc.
-  
-  public var description : String {
-    var ms = "<Route:"
-    
-    var hadLimit = false
-    if let methods = methods, !methods.isEmpty {
-      ms += " "
-      ms += methods.joined(separator: ",")
-      hadLimit = true
-    }
-    if let pattern = urlPattern {
-      ms += " "
-      ms += pattern.map({$0.description}).joined(separator: "/")
-      hadLimit = true
-    }
-    if !hadLimit { ms += " *" }
-    
-    if middleware.isEmpty {
-      ms += " NO-middleware"
-    }
-    else if middleware.count > 1 {
-      ms += " #middleware=\(middleware.count)"
-    }
-    else {
-      ms += " mw"
-    }
-    
-    ms += ">"
-    return ms
-  }
   
   public init(pattern: String?, method: String?, middleware: [Middleware]) {
     // FIXME: urlPrefix should be url or sth
@@ -297,6 +266,39 @@ public struct Route: MiddlewareObject, CustomStringConvertible {
     }
     
     return vars
+  }
+  
+  
+  // MARK: - Description
+  
+  public var description : String {
+    var ms = "<Route:"
+    
+    var hadLimit = false
+    if let methods = methods, !methods.isEmpty {
+      ms += " "
+      ms += methods.joined(separator: ",")
+      hadLimit = true
+    }
+    if let pattern = urlPattern {
+      ms += " "
+      ms += pattern.map({$0.description}).joined(separator: "/")
+      hadLimit = true
+    }
+    if !hadLimit { ms += " *" }
+    
+    if middleware.isEmpty {
+      ms += " NO-middleware"
+    }
+    else if middleware.count > 1 {
+      ms += " #middleware=\(middleware.count)"
+    }
+    else {
+      ms += " mw"
+    }
+    
+    ms += ">"
+    return ms
   }
   
 }
