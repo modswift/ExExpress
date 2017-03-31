@@ -161,6 +161,9 @@ enum RoutePattern : CustomStringConvertible {
       let matchComponent   = escapedPathComponents[i]
       
       guard patternComponent.match(string: matchComponent) else {
+        if debugMatcher {
+          print("  no match on: '\(matchComponent)' (\(patternComponent))")
+        }
         return nil
       }
       
@@ -201,9 +204,7 @@ enum RoutePattern : CustomStringConvertible {
       if lastWasEOL { return nil } // all should have been consumed
     }
     
-    if debugMatcher {
-      print("  match: '\(matched)'")
-    }
+    if debugMatcher { print("  match: '\(matched)'") }
     return matched
   }
 }

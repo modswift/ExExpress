@@ -40,7 +40,7 @@ private let patternMarker : UInt8 = 58 // ':'
  */
 open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
   
-  let debug      = false
+  let debug      = true
   
   var middleware : [ Middleware ]
   
@@ -71,33 +71,64 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
                      next     cb:  @escaping Next) throws
   {
     let debug = self.debug
-    
-    guard matches(request: req)    else {
-      if debug {
-        console.log("\(#function): route does not match, next: \(self)")
+
+    if let methods = self.methods {
+      guard methods.contains(req.method) else {
+        if debug {
+          console.log("\(#function): route method does not match, next:", self)
+        }
+        return try cb()
       }
-      return try cb()
     }
+    
+    let matchPath : String?
+    if let pattern = urlPattern {
+      // TODO: consider mounting!
+      let escapedPathComponents = split(urlPath: req.url)
+      
+      matchPath = RoutePattern.match(pattern: pattern,
+                                     against: escapedPathComponents)
+      
+      guard let match = matchPath else {
+        if debug {
+          console.log("\(#function): route path does not match, next:", self)
+        }
+        return try cb()
+      }
+      
+      if debug { console.log("\(#function) path match:", match) }
+    }
+    else {
+      matchPath = nil
+    }
+    
     guard !self.middleware.isEmpty else {
       if debug {
-        console.log("\(#function): route has no middleware, next: \(self)")
+        console.log("\(#function): route has no middleware, next:", self)
       }
       return try cb()
     }
     
-    if debug { console.log("\(#function): route matches: \(self)") }
+    if debug { console.log("\(#function): route matches:", self) }
+    
     
     // push route state
     let oldParams = req.params
     let oldRoute  = req.route
-    req.params = extractPatternVariables(request: req)
-    req.route  = self
+    let oldBase   = req.baseURL
+    req.params  = extractPatternVariables(request: req)
+    req.route   = self
+    if let mp = matchPath { req.baseURL = mp }
+    if debug { console.log("\(#function):   push baseURL:", req.baseURL) }
+    
     let endNext : Next = { _ in
-      req.params = oldParams
-      req.route  = oldRoute
-      if debug { console.log("\(#function): end-next: \(self)") }
+      req.params  = oldParams
+      req.route   = oldRoute
+      req.baseURL = oldBase
+      if debug { console.log("\(#function): end-next:", self) }
       return try cb()
     }
+    
     
     // loop over route middleware
     let stack = self.middleware
@@ -114,10 +145,10 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
 
       if debug {
         if count == 1 {
-          console.log("\(#function): handle mw in: \(self)")
+          console.log("\(#function): handle mw in:", self)
         }
         else {
-          console.log("\(#function): handle mw \(i)-of-\(count) in: \(self)")
+          console.log("\(#function): handle mw \(i)-of-\(count) in:", self)
         }
       }
       
@@ -126,7 +157,7 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
       let isLast = i == count
       try middleware(req, res, isLast ? endNext : next!)
       if isLast {
-        if debug { console.log("\(#function): last mw of: \(self)") }
+        if debug { console.log("\(#function): last mw of:", self) }
         next = nil
       }
     }
@@ -137,32 +168,6 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
   
   
   // MARK: - Matching
-  
-  func matches(request req: IncomingMessage) -> Bool {
-    
-    // match methods
-    
-    if let methods = self.methods {
-      guard methods.contains(req.method) else { return false }
-    }
-    
-    // match URLs
-    
-    if let pattern = urlPattern {
-      // TODO: consider mounting!
-      let escapedPathComponents = split(urlPath: req.url)
-      
-      guard let match = RoutePattern.match(pattern: pattern,
-                                           against: escapedPathComponents)
-       else {
-        return false
-       }
-      
-      if debug { console.log("\(#function) match:", match) }
-    }
-    
-    return true
-  }
   
   private func split(urlPath s: String) -> [ String ] {
     var url  = URL()
@@ -244,9 +249,15 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
 
 // MARK: - Request Extension
 
-private let routeKey = "io.noze.express.route"
+private let routeKey   = "io.noze.express.route"
+private let baseURLKey = "io.noze.express.baseurl"
 
 public extension IncomingMessage {
+  
+  public var baseURL : String? {
+    set { extra[baseURLKey] = newValue }
+    get { return extra[baseURLKey] as? String }
+  }
   
   public var route : Route? {
     set { extra[routeKey] = newValue }
