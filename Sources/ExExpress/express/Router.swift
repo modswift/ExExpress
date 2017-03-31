@@ -17,9 +17,14 @@
  *       RouteKeeper enabling all the `get`, `use`, etc hook-methods).
  */
 open class Router: MiddlewareObject, RouteKeeper {
-  // TBD: could be a struct?
+  // TBD: This should not be a struct. Probably results in copying the whole
+  //      stack when converting the MiddlewareObject to a middleware function.
   
   var routes = [ Route ]()
+  
+  public init(_ middleware: Middleware...) {
+    routes.append(Route(pattern: nil, method: nil, middleware: middleware))
+  }
   
   public func add(route e: Route) {
     routes.append(e)
