@@ -10,11 +10,20 @@ import XCTest
 @testable import ExExpress
 
 class ExExRouteTests: XCTestCase {
-    
   
-    func testExample() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-    }
+  #if false
+  func testSimpleExactPathMatch() throws {
+    let app = Express()
     
+    var matched = false
+    app.get("/hello") { _, _, _ in matched = true }
+    
+    let req = TestRequest()
+    let res = TestResponse()
+    try app.requestHandler(req, res)
+    
+    XCTAssert(matched, "middleware wasn't triggered as expected")
+  }
+  #endif
+  
 }
