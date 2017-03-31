@@ -6,7 +6,9 @@
 //  Copyright © 2016 ZeeZide GmbH. All rights reserved.
 //
 
-open class Express: SettingsHolder, MountableMiddlewareObject, RouteKeeper {
+open class Express: SettingsHolder, MountableMiddlewareObject, RouteKeeper,
+                    CustomStringConvertible
+{
   
   let router   = Router()
   var settings = [ String : Any ]()
@@ -69,6 +71,7 @@ open class Express: SettingsHolder, MountableMiddlewareObject, RouteKeeper {
     return settings[key]
   }
   
+  
   // MARK: - Engines
   
   var engines = [ String : ExpressEngine]()
@@ -94,7 +97,7 @@ open class Express: SettingsHolder, MountableMiddlewareObject, RouteKeeper {
   }
 
   
-  // MARK: - Event Handlers
+  // MARK: - Mounting
   
   final var mountListeners = [ ( Express ) -> Void ]()
   
@@ -109,7 +112,62 @@ open class Express: SettingsHolder, MountableMiddlewareObject, RouteKeeper {
       listener(parent)
     }
   }
+  
+  /// One or more path patterns on which this instance was mounted as a sub
+  /// application.
+  open var mountPath : [ String ]?
+  
+  public func mount(at: String, parent: Express) {
+    if mountPath == nil {
+      mountPath = [ at ]
+    }
+    else {
+      mountPath!.append(at)
+    }
+    emitOnMount(parent: parent)
+  }
+  
+  
+  // MARK: - Description
+  
+  open var description : String {
+    var ms = "<\(type(of: self)):"
+    
+    if router.routes.isEmpty {
+      ms += " no-routes"
+    }
+    else if router.routes.count == 1 {
+      ms += " route"
+    }
+    else {
+      ms += " #routes=\(router.routes.count)"
+    }
+    
+    if let mountPath = mountPath, !mountPath.isEmpty {
+      if mountPath.count == 1 {
+        ms += " mounted=\(mountPath[0])"
+      }
+      else {
+        ms += " mounted=[\(mountPath.joined(separator: ","))]"
+      }
+    }
+    
+    if !engines.isEmpty {
+      ms += " engines="
+      ms += engines.keys.joined(separator: ",")
+    }
+    
+    if !settings.isEmpty {
+      for ( key, value ) in settings {
+        ms += " '\(key)'='\(value)'"
+      }
+    }
+    
+    ms += ">"
+    return ms
+  }
 }
+
 
 private let appKey    = "io.noze.express.app"
 private let reqKey    = "io.noze.express.request"

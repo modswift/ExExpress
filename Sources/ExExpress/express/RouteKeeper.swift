@@ -74,10 +74,13 @@ public extension RouteKeeper {
   }
 }
 
-fileprivate func mountIfPossible(parent: RouteKeeper, child: MiddlewareObject) {
+fileprivate func mountIfPossible(pattern : String,
+                                 parent  : RouteKeeper,
+                                 child   : MiddlewareObject)
+{
   guard let parent = parent as? Express                   else { return }
   guard let child  = child  as? MountableMiddlewareObject else { return }
-  child.emitOnMount(parent: parent)
+  child.mount(at: pattern, parent: parent)
 }
 
 public extension RouteKeeper {
@@ -90,55 +93,54 @@ public extension RouteKeeper {
   
   @discardableResult
   public mutating func use(_ mw: MiddlewareObject) -> Self {
-    mountIfPossible(parent: self, child: mw)
     return use(mw.middleware)
   }
   
   @discardableResult
   public mutating func use(_ p: String, _ mw: MiddlewareObject) -> Self {
-    mountIfPossible(parent: self, child: mw)
+    mountIfPossible(pattern: p, parent: self, child: mw)
     return use(p, mw.middleware)
   }
   
   @discardableResult
   public mutating func all(_ p: String, _ mw: MiddlewareObject) -> Self {
-    mountIfPossible(parent: self, child: mw)
+    mountIfPossible(pattern: p, parent: self, child: mw)
     return all(p, mw.middleware)
   }
   
   @discardableResult
   public mutating func get(_ p: String, _ mw: MiddlewareObject) -> Self {
-    mountIfPossible(parent: self, child: mw)
+    mountIfPossible(pattern: p, parent: self, child: mw)
     return get(p, mw.middleware)
   }
   
   @discardableResult
   public mutating func post(_ p: String, _ mw: MiddlewareObject) -> Self {
-    mountIfPossible(parent: self, child: mw)
+    mountIfPossible(pattern: p, parent: self, child: mw)
     return post(p, mw.middleware)
   }
   
   @discardableResult
   public mutating func head(_ p: String, _ mw: MiddlewareObject) -> Self {
-    mountIfPossible(parent: self, child: mw)
+    mountIfPossible(pattern: p, parent: self, child: mw)
     return head(p, mw.middleware)
   }
   
   @discardableResult
   public mutating func put(_ p: String, _ mw: MiddlewareObject) -> Self {
-    mountIfPossible(parent: self, child: mw)
+    mountIfPossible(pattern: p, parent: self, child: mw)
     return put(p, mw.middleware)
   }
   
   @discardableResult
   public mutating func del(_ p: String, _ mw: MiddlewareObject) -> Self {
-    mountIfPossible(parent: self, child: mw)
+    mountIfPossible(pattern: p, parent: self, child: mw)
     return del(p, mw.middleware)
   }
   
   @discardableResult
   public mutating func patch(_ p: String, _ mw: MiddlewareObject) -> Self {
-    mountIfPossible(parent: self, child: mw)
+    mountIfPossible(pattern: p, parent: self, child: mw)
     return patch(p, mw.middleware)
   }
 }

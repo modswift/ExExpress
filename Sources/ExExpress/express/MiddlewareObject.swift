@@ -31,7 +31,7 @@ public protocol MiddlewareObject {
 
 public protocol MountableMiddlewareObject : MiddlewareObject {
   
-  func emitOnMount(parent: Express)
+  func mount(at: String, parent: Express)
   
 }
 
