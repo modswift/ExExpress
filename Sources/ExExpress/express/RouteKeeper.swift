@@ -85,6 +85,8 @@ public extension RouteKeeper {
   //   let app   = express()
   //   let admin = express()
   //   app.use("/admin", admin)
+  // TBD: should we have a Route which keeps the object? Has various advantages,
+  //      particularily during debugging.
   
   @discardableResult
   public mutating func use(_ mw: MiddlewareObject) -> Self {
