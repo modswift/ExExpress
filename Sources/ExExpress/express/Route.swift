@@ -149,7 +149,7 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
     
     // match URLs
     
-    if var pattern = urlPattern {
+    if let pattern = urlPattern {
       // TODO: consider mounting!
       let escapedPathComponents = split(urlPath: req.url)
       
