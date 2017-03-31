@@ -39,13 +39,11 @@ private let debugMatcher  = false
  *
  * and companions.
  */
-public struct Route: MiddlewareObject, CustomStringConvertible {
+open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
   
-  let debug = false
+  let debug      = false
   
-  let middleware : [ Middleware ]
-    // TBD: I think in Express.js, even the Route objects are middleware stack,
-    //      and they allow you to hook up multiple objects to the same route
+  var middleware : [ Middleware ]
   
   let methods    : [ String ]?
   
@@ -196,6 +194,13 @@ public struct Route: MiddlewareObject, CustomStringConvertible {
     }
     
     return vars
+  }
+  
+  
+  // MARK: - RouteKeeper
+  
+  public func add(route e: Route) {
+    middleware.append(e.middleware)
   }
   
   
