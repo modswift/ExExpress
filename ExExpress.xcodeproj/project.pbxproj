@@ -10,6 +10,7 @@
 		E81D110D1E8EB70E0085B6E7 /* libExExpress.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E82359181E49F02C000B3120 /* libExExpress.dylib */; };
 		E81D11171E8EB91D0085B6E7 /* ExExRouteTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E81D11151E8EB7A30085B6E7 /* ExExRouteTests.swift */; };
 		E81D11191E8EB95E0085B6E7 /* TestSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = E81D11181E8EB95E0085B6E7 /* TestSupport.swift */; };
+		E85911881E8EC0D10061B209 /* RoutePattern.swift in Sources */ = {isa = PBXBuildFile; fileRef = E85911871E8EC0D10061B209 /* RoutePattern.swift */; };
 		E8AFFF5D1E6F19260074266E /* time.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8AFFF5A1E6F19260074266E /* time.swift */; };
 		E8AFFF5E1E6F19260074266E /* timespec.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8AFFF5B1E6F19260074266E /* timespec.swift */; };
 		E8AFFF5F1E6F19260074266E /* timeval_any.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8AFFF5C1E6F19260074266E /* timeval_any.swift */; };
@@ -78,6 +79,7 @@
 		E82359181E49F02C000B3120 /* libExExpress.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libExExpress.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		E82359B51E49F311000B3120 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		E85911851E8EBD680061B209 /* libswiftSwiftOnoneSupport.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libswiftSwiftOnoneSupport.tbd; path = System/Library/PrivateFrameworks/Swift/libswiftSwiftOnoneSupport.tbd; sourceTree = SDKROOT; };
+		E85911871E8EC0D10061B209 /* RoutePattern.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RoutePattern.swift; path = Sources/ExExpress/express/RoutePattern.swift; sourceTree = SOURCE_ROOT; };
 		E8AFFF5A1E6F19260074266E /* time.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = time.swift; path = Sources/ExExpress/xsys/time.swift; sourceTree = SOURCE_ROOT; };
 		E8AFFF5B1E6F19260074266E /* timespec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = timespec.swift; path = Sources/ExExpress/xsys/timespec.swift; sourceTree = SOURCE_ROOT; };
 		E8AFFF5C1E6F19260074266E /* timeval_any.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = timeval_any.swift; path = Sources/ExExpress/xsys/timeval_any.swift; sourceTree = SOURCE_ROOT; };
@@ -262,6 +264,7 @@
 				E8AFFF921E6F199F0074266E /* Route.swift */,
 				E8AFFF931E6F199F0074266E /* RouteKeeper.swift */,
 				E8AFFF941E6F199F0074266E /* Router.swift */,
+				E85911871E8EC0D10061B209 /* RoutePattern.swift */,
 				E8AFFF951E6F199F0074266E /* Settings.swift */,
 				E8AFFF8D1E6F199F0074266E /* ExpressJSON.swift */,
 				E8AFFF8E1E6F199F0074266E /* ExpressMustache.swift */,
@@ -509,6 +512,7 @@
 				E8AFFF751E6F19580074266E /* Stringify.swift in Sources */,
 				E81D11191E8EB95E0085B6E7 /* TestSupport.swift in Sources */,
 				E8AFFFBB1E6F1B6C0074266E /* Session.swift in Sources */,
+				E85911881E8EC0D10061B209 /* RoutePattern.swift in Sources */,
 				E8AFFF671E6F19300074266E /* WritableStreams.swift in Sources */,
 				E8AFFF811E6F19690074266E /* HttpMisc.swift in Sources */,
 				E8AFFFAD1E6F1B5D0074266E /* Connect.swift in Sources */,
