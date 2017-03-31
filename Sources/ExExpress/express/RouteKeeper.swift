@@ -20,6 +20,29 @@ public protocol RouteKeeper {
   
 }
 
+// MARK: - Route Method
+
+public extension RouteKeeper {
+  
+  /**
+   * Returns a route to gate on a path. Since a `Route` itself is a RouteKeeper,
+   * you can then hookup additional routes.
+   *
+   * Example:
+   *
+   *     app.route("/cows")
+   *       .get  { req, res, next ... }
+   *       .post { req, res, next ... }
+   */
+  public mutating func route(_ p: String) -> Route {
+    let route = Route(pattern: nil, method: nil, middleware: [])
+    add(route: route)
+    return route
+  }
+  
+}
+
+
 // MARK: - Add Middleware
   
 public extension RouteKeeper {
