@@ -67,17 +67,12 @@ public extension ServerResponse {
         // object as a value :-)
         var setContentType = true
         if let oldType = res.getHeader("Content-Type") {
-          let s : String
-          if let oldType = oldType as? String {
-            s = oldType
-          }
-          else {
-            s = String(describing: oldType) // FIXME
-          }
+          let s = (oldType as? String) ?? String(describing: oldType) // FIXME
           setContentType = (s == "httpd/unix-directory") // a hack for Apache
         }
         
         if setContentType {
+          // FIXME: also consider extension of template (.html, .vcf etc)
           res.setHeader("Content-Type", detectTypeForContent(string: s))
         }
         
