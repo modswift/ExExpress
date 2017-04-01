@@ -36,7 +36,7 @@ public extension RouteKeeper {
    *
    */
   public func route(_ p: String) -> Route {
-    let route = Route(pattern: nil, method: nil, middleware: [])
+    let route = Route(pattern: p, method: nil, middleware: [])
     add(route: route)
     return route
   }
