@@ -7,7 +7,7 @@
 //
 
 /// TODO: document, what are the varargs in Next?
-public typealias Next = (Any...) throws -> Void
+public typealias Next = (Any...) -> Void
 
 /// Supposed to call Next() when it is done.
 public typealias Middleware =
@@ -67,9 +67,9 @@ public class Connect {
     }
   }
   public var middleware : Middleware {
-    return { req, res, cb in
+    return { req, res, next in
       try self.doRequest(req, res) // THIS IS WRONG, need to call cb() only on last
-      try cb()
+      next()
     }
   }
   
@@ -84,13 +84,20 @@ public class Connect {
     // TODO: would be nice to have this as a lazy filter.
     let matchingMiddleware = middlewarez.filter { $0.matches(request: request) }
     
+    var error : Error? = nil
+    
     let endNext : Next = { _ in
       // essentially the final handler
       response.writeHead(404)
-      try response.end()
+      do {
+        try response.end()
+      }
+      catch (let e) {
+        error = e
+      }
     }
     
-    guard !matchingMiddleware.isEmpty else { return try endNext() }
+    guard !matchingMiddleware.isEmpty else { return endNext() }
     
     var next : Next? = { _ in } // cannot be let as it's self-referencing
     
@@ -105,14 +112,24 @@ public class Connect {
       // call the middleware - which gets the handle to go to the 'next'
       // middleware. the latter can be the 'endNext' which won't do anything.
       let isLast = i == matchingMiddleware.count
-      try middleware(request, response, isLast ? endNext : next!)
+      do {
+        try middleware(request, response, isLast ? endNext : next!)
+      }
+      catch (let e) {
+        error = e
+      }
       
-      if isLast {
+      if isLast || error != nil {
         next = nil // break cycle?
       }
     }
     
-    try next!()
+    next!()
+    
+    // synchronous
+    if let error = error {
+      throw error
+    }
   }
   
 }

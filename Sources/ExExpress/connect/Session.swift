@@ -31,7 +31,7 @@ public func session(store s : SessionStore = InMemorySessionStore(),
     guard let sessionID = ctx.sessionID else {
       // no cookie with session-ID, register new
       ctx.configureNewSession()
-      return try next()
+      return next()
     }
     
     // retrieve from store
@@ -41,7 +41,7 @@ public func session(store s : SessionStore = InMemorySessionStore(),
           console.log("No error, but could not retrieve session with ID" +
                       " \(sessionID)")
           ctx.configureNewSession()
-          return try next()
+          return next()
         }
         
         // found a session, store into request
@@ -54,13 +54,13 @@ public func session(store s : SessionStore = InMemorySessionStore(),
             }
           }
         }
-        try next()
+        next()
       }
     }
     catch let err as SessionStoreError where err == .SessionNotFound {
       console.log("could not retrieve session with ID \(sessionID): \(err)")
       ctx.configureNewSession()
-      return try next()
+      return next()
     }
     catch (let err) {
       throw(err)

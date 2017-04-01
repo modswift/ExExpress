@@ -68,7 +68,7 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
   
   public func handle(request  req: IncomingMessage,
                      response res: ServerResponse,
-                     next     cb:  @escaping Next) throws
+                     next        :  @escaping Next) throws
   {
     let debug = self.debug
 
@@ -77,7 +77,7 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
         if debug {
           console.log("\(#function): route method does not match, next:", self)
         }
-        return try cb()
+        return next()
       }
     }
     
@@ -98,7 +98,7 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
             console.log("\(#function): mount route path does not match, next:",
                         self)
           }
-          return try cb()
+          return next()
         }
         
         matchPath = base + match
@@ -113,7 +113,7 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
           if debug {
             console.log("\(#function): route path does not match, next:", self)
           }
-          return try cb()
+          return next()
          }
         matchPath = mp
       }
@@ -131,7 +131,7 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
       if debug {
         console.log("\(#function): route has no middleware, next:", self)
       }
-      return try cb()
+      return next()
     }
     
     if debug { console.log("\(#function): route matches:", self) }
@@ -151,7 +151,7 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
       req.route   = oldRoute
       req.baseURL = oldBase
       if debug { console.log("\(#function): end-next:", self) }
-      return try cb()
+      return next()
     }
     
     
@@ -162,6 +162,7 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
     
     var i = 0 // capture position in matching-middleware array (shared)
     
+    var errorToThrow : Error? = nil
     next = { args in
       
       // grab next item from middleware array
@@ -180,15 +181,22 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
       // call the middleware - which gets the handle to go to the 'next'
       // middleware. the latter can be the 'endNext'
       let isLast = i == count
-      try middleware(req, res, isLast ? endNext : next!)
-      if isLast {
+      do {
+        try middleware(req, res, isLast ? endNext : next!)
+      }
+      catch (let e) {
+        errorToThrow = e
+      }
+      if isLast || errorToThrow != nil {
         if debug { console.log("\(#function): last mw of:", self) }
         next = nil
       }
     }
     
     // inititate the traversal
-    try next!()
+    next!()
+    
+    if let e = errorToThrow { throw e }
   }
   
   

@@ -38,7 +38,7 @@ open class Express: SettingsHolder, MountableMiddlewareObject, RouteKeeper,
       res.extra[appKey] = oldApp
       res.extra[reqKey] = oldReq
       
-      try! next() // continue
+      next() // continue
     }
   }
   

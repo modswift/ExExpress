@@ -34,11 +34,11 @@ public func cors(allowOrigin  origin  : String,
         try res.end()
       }
       else {
-        try next() // bubble up, there may be more OPTIONS stuff
+        next() // bubble up, there may be more OPTIONS stuff
       }
     }
     else {
-      try next()
+      next()
     }
   }
 }

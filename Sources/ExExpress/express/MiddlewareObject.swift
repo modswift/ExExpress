@@ -49,36 +49,46 @@ public extension MiddlewareObject {
 
   public var requestHandler: RequestEventCB {
     return { req, res in
-      let errorToThrow : Error?
+      var errorToThrow : Error? = nil
       
       do {
+        var errorToThrow : Error? = nil
+        
         try self.handle(request: req, response: res) { _ in
-          // essentially the final handler
-          
-          if req.method == "OPTIONS" {
-            // This assumes option headers have been set via cors middleware or
-            // sth similar.
-            // Just respond with OK and we are done, right?
+          do {
+            // essentially the final handler
             
-            if res.getHeader("Allow") == nil {
-              res.setHeader("Allow",
-                            allowedDefaultMethods.joined(separator: ", "))
+            if req.method == "OPTIONS" {
+              // This assumes option headers have been set via cors middleware or
+              // sth similar.
+              // Just respond with OK and we are done, right?
+              
+              if res.getHeader("Allow") == nil {
+                res.setHeader("Allow",
+                              allowedDefaultMethods.joined(separator: ", "))
+              }
+              if res.getHeader("Server") == nil {
+                res.setHeader("Server", "ApacheExpress/1.33.7")
+              }
+              
+              res.writeHead(200)
+              try res.end()
             }
-            if res.getHeader("Server") == nil {
-              res.setHeader("Server", "ApacheExpress/1.33.7")
+            else {
+              console.warn("No middleware called end: " +
+                           "\(self) \(req.method) \(req.url)")
+              res.writeHead(404)
+              try res.end()
             }
-            
-            res.writeHead(200)
-            try res.end()
           }
-          else {
-            console.warn("No middleware called end: " +
-                         "\(self) \(req.method) \(req.url)")
-            res.writeHead(404)
-            try res.end()
+          catch (let _error) {
+            errorToThrow = _error
           }
         }
-        errorToThrow = nil
+        
+        if let error = errorToThrow { // just bubble up to below
+          throw error
+        }
       }
       catch (let _error) {
         errorToThrow = _error

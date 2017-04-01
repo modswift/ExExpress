@@ -37,13 +37,14 @@ open class Router: MiddlewareObject, RouteKeeper {
                      response res     : ServerResponse,
                      next     endNext : @escaping Next) throws
   {
-    guard !self.routes.isEmpty else { return try endNext() }
+    guard !self.routes.isEmpty else { return endNext() }
     
     let routes = self.routes // make a copy to protect against modifications
     var next : Next? = { _ in } // cannot be let as it's self-referencing
     
     var i = 0 // capture position in matching-middleware array (shared)
     
+    var error : Error? = nil
     next = { args in
       
       // grab next item from matching middleware array
@@ -53,13 +54,21 @@ open class Router: MiddlewareObject, RouteKeeper {
       // call the middleware - which gets the handle to go to the 'next'
       // middleware. the latter can be the 'endNext'
       let isLast = i == routes.count
-      try route.handle(request: req, response: res,
-                       next: isLast ? endNext : next!)
-      if isLast { next = nil }
+      
+      do {
+        try route.handle(request: req, response: res,
+                         next: isLast ? endNext : next!)
+      }
+      catch (let e) {
+        error = e
+      }
+      if isLast || error != nil { next = nil }
     }
     
     // inititate the traversal
-    try next!()
+    next!()
+    
+    if let error = error { throw error }
   }
   
 }

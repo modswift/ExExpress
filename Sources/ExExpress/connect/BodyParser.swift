@@ -150,7 +150,7 @@ public extension bodyParser {
   ///
   public static func json(options opts: Options = Options()) -> Middleware {
     return { req, res, next in
-      guard typeIs(req, [ "json" ]) != nil else { return try next() }
+      guard typeIs(req, [ "json" ]) != nil else { return next() }
       
       // lame, should be streaming
       let bytes = try req.readBody()
@@ -158,7 +158,7 @@ public extension bodyParser {
       let result = BodyParserJSON.parse(bytes)
       // TODO: error?
       req.body = result != nil ? .JSON(result!) : .NoBody
-      try next()
+      next()
     }
   }
 
@@ -174,7 +174,7 @@ public extension bodyParser {
       // lame, should be streaming
       let bytes = try req.readBody()
       req.body = .Raw(bytes)
-      try next()
+      next()
     }
   }
   
@@ -182,14 +182,14 @@ public extension bodyParser {
     return { req, res, next in
       // text/plain, text/html etc
       // TODO: properly process charset parameter, this assumes UTF-8
-      guard typeIs(req, [ "text" ]) != nil else { return try next() }
+      guard typeIs(req, [ "text" ]) != nil else { return next() }
       
       // lame, should be streaming
       let bytes = try req.readBody()
       if let s = String.decode(utf8: bytes) {
         req.body = .Text(s)
       }
-      try next()
+      next()
     }
   }
   
@@ -236,8 +236,7 @@ public extension bodyParser {
   {
     return { req, res, next in
       guard typeIs(req, [ "application/x-www-form-urlencoded" ]) != nil else {
-        try next()
-        return
+        return next()
       }
       
       // TODO: `extended` option. (maps to our zopeFormats?)
@@ -245,7 +244,7 @@ public extension bodyParser {
       if let s = String.decode(utf8: bytes) {
         let qp = querystring.parse(s)
         req.body = .URLEncoded(qp)
-        try next()
+        next()
       }
     }
   }
