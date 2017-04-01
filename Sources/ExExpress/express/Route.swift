@@ -134,6 +134,7 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
   {
     let debug = self.debug
     let ids   = logPrefix
+    if debug { console.log("\(ids) > enter route:", self) }
     
     if let methods = self.methods {
       guard methods.contains(req.method) else {
@@ -181,7 +182,7 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
         matchPath = mp
       }
       
-      if debug { console.log("\(ids) path match:", matchPath) }
+      if debug { console.log("\(ids)     path match:", matchPath) }
       
       params = newParams
     }
@@ -197,7 +198,7 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
       return next()
     }
     
-    if debug { console.log("\(ids) route matches:", self) }
+    if debug { console.log("\(ids) * route matches") }
     
     
     // push route state
