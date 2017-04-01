@@ -81,15 +81,18 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
       }
     }
     
+    let params    : [ String : String ]
     let matchPath : String?
     if let pattern = urlPattern {
-      // TODO: consider mounting!
+      var newParams = req.params // TBD
+      
       if let base = req.baseURL {
         let mountPath = req.url.substring(from: base.endIndex)
-        let escapedPathComponents = split(urlPath: mountPath)
+        let comps     = split(urlPath: mountPath)
 
-        let mountMatchPath = RoutePattern.match(pattern: pattern,
-                                                against: escapedPathComponents)
+        let mountMatchPath = RoutePattern.match(pattern   : pattern,
+                                                against   : comps,
+                                                variables : &newParams)
         guard let match = mountMatchPath else {
           if debug {
             console.log("\(#function): mount route path does not match, next:",
@@ -101,10 +104,11 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
         matchPath = base + match
       }
       else {
-        let escapedPathComponents = split(urlPath: req.url)
+        let comps = split(urlPath: req.url)
         
-        guard let mp = RoutePattern.match(pattern: pattern,
-                                          against: escapedPathComponents)
+        guard let mp = RoutePattern.match(pattern   : pattern,
+                                          against   : comps,
+                                          variables : &newParams)
          else {
           if debug {
             console.log("\(#function): route path does not match, next:", self)
@@ -115,9 +119,12 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
       }
       
       if debug { console.log("\(#function) path match:", matchPath) }
+      
+      params = newParams
     }
     else {
       matchPath = nil
+      params    = req.params
     }
     
     guard !self.middleware.isEmpty else {
@@ -134,7 +141,7 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
     let oldParams = req.params
     let oldRoute  = req.route
     let oldBase   = req.baseURL
-    req.params  = extractPatternVariables(request: req)
+    req.params  = params
     req.route   = self
     if let mp = matchPath { req.baseURL = mp }
     if debug { console.log("\(#function):   push baseURL:", req.baseURL) }
@@ -191,35 +198,6 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
     var url  = URL()
     url.path = s
     return url.escapedPathComponents!
-  }
-  
-  func extractPatternVariables(request rq: IncomingMessage)
-       -> [ String : String ]
-  {
-    guard let pat = urlPattern else { return [:] }
-    
-    // TODO: consider mounting!
-    let matchPrefix = rq.url
-    
-    var url = URL()
-    url.path = matchPrefix
-    let matchComponents = url.escapedPathComponents!
-    
-    var vars = [ String : String ]()
-    
-    for i in pat.indices {
-      guard i < matchComponents.count else { break }
-      
-      let patternComponent = pat[i]
-      let matchComponent   = matchComponents[i]
-      
-      switch patternComponent {
-        case .Variable(let s): vars[s] = matchComponent
-        default:               continue
-      }
-    }
-    
-    return vars
   }
   
   

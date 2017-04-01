@@ -116,7 +116,8 @@ enum RoutePattern : CustomStringConvertible {
   // MARK: - Pattern Matching
   
   static func match(pattern p: [ RoutePattern ],
-                    against escapedPathComponents: [ String ]) -> String?
+                    against escapedPathComponents: [ String ],
+                    variables: inout [ String : String ]) -> String?
   {
     // Note: Express does a prefix match, which is important for mounting.
     // TODO: Would be good to support a "$" pattern which guarantees an exact
@@ -158,7 +159,7 @@ enum RoutePattern : CustomStringConvertible {
     var lastWasEOL      = false
     for i in pattern.indices {
       let patternComponent = pattern[i]
-      let matchComponent   = escapedPathComponents[i]
+      let matchComponent   = escapedPathComponents[i] // TODO: unescape?
       
       guard patternComponent.match(string: matchComponent) else {
         if debugMatcher {
@@ -179,6 +180,11 @@ enum RoutePattern : CustomStringConvertible {
         print("  comp matched[\(i)]: \(patternComponent) " +
               "against '\(matchComponent)'")
       }
+
+      if case .Variable(let s) = patternComponent {
+        variables[s] = matchComponent // TODO: unescape
+      }
+      
       
       // Special case, last component is a wildcard. Like /* or /todos/*. In
       // this case we ignore extra URL path stuff.
