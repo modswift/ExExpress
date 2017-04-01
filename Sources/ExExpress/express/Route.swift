@@ -40,13 +40,32 @@ private let patternMarker : UInt8 = 58 // ':'
  */
 open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
   
-  public enum MiddlewareHolder {
+  public enum MiddlewareHolder : MiddlewareObject {
     case object(MiddlewareObject)
     case middleware(Middleware)
     case errorMiddleware(ErrorMiddleware)
+    
+    public func handle(error    : Error?,
+                       request  : IncomingMessage,
+                       response : ServerResponse,
+                       next     : @escaping Next) throws
+    {
+      switch self {
+        case .object(let mw):
+          try mw.handle(error: error, request: request, response: response,
+                        next: next)
+        case .middleware(let mw):
+          guard error == nil else { return next() }
+          try mw(request, response, next)
+        case .errorMiddleware(let mw):
+          guard let error = error else { return next() }
+          try mw(error, request, response, next)
+      }
+    }
   }
   
-  let debug      = false
+  let debug      = true
+  let id         : String?
   
   var middleware : [ MiddlewareHolder ]
   
@@ -56,10 +75,10 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
     // FIXME: all this works a little different in Express.js. Exact matches,
     //        non-path-component matches, regex support etc.
   
-  public init(pattern: String?, method: String?,
+  public init(id: String? = nil, pattern: String?, method: String?,
               middleware: [ MiddlewareHolder ])
   {
-    // FIXME: urlPrefix should be url or sth
+    self.id = id
     
     if let m = method { self.methods = [ m ] }
     else { self.methods = nil }
@@ -68,26 +87,38 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
     
     self.urlPattern = pattern != nil ? RoutePattern.parse(pattern!) : nil
 
-    if debug { console.log("\(#function): setup route: \(self)") }
+    if debug {
+      if self.middleware.isEmpty {
+        console.log("\(#function): setup route w/o middleware: \(self)")
+      }
+      else {
+        console.log("\(#function): setup route: \(self)")
+      }
+    }
   }
   
-  public convenience init(pattern: String?, method: String?,
-                          middleware: @escaping Middleware)
+  public convenience init(id: String? = nil, pattern: String?, method: String?,
+                          middleware: [ Middleware ])
   {
-    self.init(pattern: pattern, method: method,
-              middleware: [ MiddlewareHolder.middleware(middleware) ])
+    self.init(id: id, pattern: pattern, method: method,
+              middleware: middleware.map { .middleware($0) })
   }
-  public convenience init(pattern: String?, method: String?,
-                          middleware: @escaping ErrorMiddleware)
+  public convenience init(id: String? = nil, pattern: String?, method: String?,
+                          middleware: [ ErrorMiddleware ])
   {
-    self.init(pattern: pattern, method: method,
-              middleware: [ MiddlewareHolder.errorMiddleware(middleware) ])
+    self.init(id: id, pattern: pattern, method: method,
+              middleware: middleware.map { .errorMiddleware($0) })
   }
-  public convenience init(pattern: String?, method: String?,
-                          middleware: MiddlewareObject)
+  public convenience init(id: String? = nil, pattern: String?, method: String?,
+                          middleware: [ MiddlewareObject ])
   {
-    self.init(pattern: pattern, method: method,
-              middleware: [ MiddlewareHolder.object(middleware) ])
+    self.init(id: id, pattern: pattern, method: method,
+              middleware: middleware.map { .object($0) })
+  }
+
+  public convenience init(id: String? = nil, pattern: String?) {
+    self.init(id: id, pattern: pattern, method: nil,
+              middleware: [] as [ MiddlewareHolder ])
   }
   
   
@@ -210,32 +241,15 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
       // middleware. the latter can be the 'endNext'
       let isLast = i == count
       do {
-        switch middleware {
-          case .object(let middleware):
-            try middleware.handle(error: errorToThrow,
-                                  request: req, response: res,
-                                  next: isLast ? endNext : next!)
-          case .middleware(let middleware):
-            if errorToThrow == nil {
-              try middleware(req, res, isLast ? endNext : next!)
-            }
-            else {
-              isLast ? endNext() : next!()
-            }
-          
-          case .errorMiddleware(let middleware):
-            if let error = errorToThrow {
-              try middleware(error, req, res, isLast ? endNext : next!)
-            }
-            else {
-              isLast ? endNext() : next!()
-            }
-        }
+        try middleware.handle(error: errorToThrow,
+                              request: req, response: res,
+                              next: isLast ? endNext : next!)
       }
       catch (let e) {
+        if debug { console.log("\(#function): catched:", e) }
         errorToThrow = e
       }
-      if isLast || errorToThrow != nil {
+      if isLast {
         if debug { console.log("\(#function): last mw of:", self) }
         next = nil
       }
@@ -243,8 +257,13 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
     
     // inititate the traversal
     next!()
-    
-    if let e = errorToThrow { throw e }
+   
+    // TBD: do we still want to do this with error middleware? Only on final
+    //      handler?
+    if let e = errorToThrow {
+      if debug { console.log("\(#function): rethrow:", e) }
+      throw e
+    }
   }
   
   
@@ -269,6 +288,11 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
   public var description : String {
     var ms = "<Route:"
     
+    if let id = id {
+      ms += " "
+      ms += id
+    }
+    
     var hadLimit = false
     if let methods = methods, !methods.isEmpty {
       ms += " "
@@ -289,7 +313,11 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
       ms += " #middleware=\(middleware.count)"
     }
     else {
-      ms += " mw"
+      switch middleware[0] {
+        case .object    (let mw): ms += " \(mw)"
+        case .middleware:         ms += " mw"
+        case .errorMiddleware:    ms += " errmw"
+      }
     }
     
     ms += ">"
