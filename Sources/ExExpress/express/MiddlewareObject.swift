@@ -23,9 +23,10 @@
  */
 public protocol MiddlewareObject {
   
-  func handle(request  req: IncomingMessage,
-              response res: ServerResponse,
-              next     cb:  @escaping Next) throws
+  func handle(error    : Error?,
+              request  : IncomingMessage,
+              response : ServerResponse,
+              next     : @escaping Next) throws
   
 }
 
@@ -43,7 +44,7 @@ public extension MiddlewareObject {
   
   public var middleware: Middleware {
     return { req, res, next in
-      try self.handle(request: req, response: res, next: next)
+      try self.handle(error: nil, request: req, response: res, next: next)
     }
   }
 
@@ -54,7 +55,7 @@ public extension MiddlewareObject {
       do {
         var errorToThrow : Error? = nil
         
-        try self.handle(request: req, response: res) { _ in
+        try self.handle(error: nil, request: req, response: res) { _ in
           do {
             // essentially the final handler
             

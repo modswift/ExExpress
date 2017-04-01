@@ -40,9 +40,15 @@ private let patternMarker : UInt8 = 58 // ':'
  */
 open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
   
+  enum MiddlewareHolder {
+    case object(MiddlewareObject)
+    case middleware(Middleware)
+    case errorMiddleware(ErrorMiddleware)
+  }
+  
   let debug      = false
   
-  var middleware : [ Middleware ]
+  var middleware : [ MiddlewareHolder ]
   
   let methods    : [ String ]?
   
@@ -56,7 +62,7 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
     if let m = method { self.methods = [ m ] }
     else { self.methods = nil }
     
-    self.middleware = middleware
+    self.middleware = middleware.map { .middleware($0) }
     
     self.urlPattern = pattern != nil ? RoutePattern.parse(pattern!) : nil
 
@@ -66,12 +72,13 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
   
   // MARK: MiddlewareObject
   
-  public func handle(request  req: IncomingMessage,
+  public func handle(error       : Error?,
+                     request  req: IncomingMessage,
                      response res: ServerResponse,
                      next        :  @escaping Next) throws
   {
     let debug = self.debug
-
+    
     if let methods = self.methods {
       guard methods.contains(req.method) else {
         if debug {
@@ -182,7 +189,27 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
       // middleware. the latter can be the 'endNext'
       let isLast = i == count
       do {
-        try middleware(req, res, isLast ? endNext : next!)
+        switch middleware {
+          case .object(let middleware):
+            try middleware.handle(error: errorToThrow,
+                                  request: req, response: res,
+                                  next: isLast ? endNext : next!)
+          case .middleware(let middleware):
+            if errorToThrow == nil {
+              try middleware(req, res, isLast ? endNext : next!)
+            }
+            else {
+              isLast ? endNext() : next!()
+            }
+          
+          case .errorMiddleware(let middleware):
+            if let error = errorToThrow {
+              try middleware(error, req, res, isLast ? endNext : next!)
+            }
+            else {
+              isLast ? endNext() : next!()
+            }
+        }
       }
       catch (let e) {
         errorToThrow = e
@@ -212,7 +239,7 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
   // MARK: - RouteKeeper
   
   public func add(route e: Route) {
-    middleware.append(e.middleware)
+    middleware.append(.object(e))
   }
   
   

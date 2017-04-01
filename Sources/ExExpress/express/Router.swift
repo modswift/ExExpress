@@ -33,7 +33,8 @@ open class Router: MiddlewareObject, RouteKeeper {
   
   // MARK: MiddlewareObject
   
-  public func handle(request  req     : IncomingMessage,
+  public func handle(error            : Error?,
+                     request  req     : IncomingMessage,
                      response res     : ServerResponse,
                      next     endNext : @escaping Next) throws
   {
@@ -56,18 +57,19 @@ open class Router: MiddlewareObject, RouteKeeper {
       let isLast = i == routes.count
       
       do {
-        try route.handle(request: req, response: res,
+        try route.handle(error: error, request: req, response: res,
                          next: isLast ? endNext : next!)
       }
       catch (let e) {
         error = e
       }
-      if isLast || error != nil { next = nil }
+      if isLast { next = nil }
     }
     
     // inititate the traversal
     next!()
     
+    // TBD: do we really want to throw? Handled by error middleware?
     if let error = error { throw error }
   }
   

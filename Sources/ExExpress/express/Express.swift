@@ -22,7 +22,8 @@ open class Express: SettingsHolder, MountableMiddlewareObject, RouteKeeper,
   
   // MARK: - MiddlewareObject
   
-  open func handle(request  req : IncomingMessage,
+  open func handle(error        : Error?,
+                   request  req : IncomingMessage,
                    response res : ServerResponse,
                    next         : @escaping Next) throws
   {
@@ -32,7 +33,7 @@ open class Express: SettingsHolder, MountableMiddlewareObject, RouteKeeper,
     res.extra[appKey] = self
     res.extra[reqKey] = req
     
-    try router.handle(request: req, response: res) { _ in
+    try router.handle(error: error, request: req, response: res) { _ in
       // this is only called if no object in the sub-application called 'next'!
       req.extra[appKey] = oldApp
       res.extra[appKey] = oldApp
