@@ -132,7 +132,7 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
                      next         :  @escaping Next) throws
   {
     let debug = self.debug
-    let ids   = id != nil ? " [\(id!)]" : ""
+    let ids   = id != nil ? "[\(id!)] " : ""
     
     if let methods = self.methods {
       guard methods.contains(req.method) else {
@@ -180,7 +180,7 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
         matchPath = mp
       }
       
-      if debug { console.log("\(#function) path match:", matchPath) }
+      if debug { console.log("\(#function): path match:", matchPath) }
       
       params = newParams
     }
@@ -205,8 +205,10 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
     let oldBase   = req.baseURL
     req.params  = params
     req.route   = self
-    if let mp = matchPath { req.baseURL = mp }
-    if debug { console.log("\(#function):   push baseURL:", req.baseURL) }
+    if let mp = matchPath {
+      req.baseURL = mp
+      if debug { console.log("\(#function):   push baseURL:", req.baseURL) }
+    }
     
     let endNext : Next = { _ in
       req.params  = oldParams
@@ -224,6 +226,8 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
     
     var i = 0 // capture position in matching-middleware array (shared)
     
+    if debug { console.log("\(#function):   walk stack #\(count):", self) }
+    
     var errorToThrow : Error? = nil
     next = { args in
       
@@ -232,11 +236,14 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
       i += 1 // this is shared between the blocks, move position in array
 
       if debug {
+        let errorInfo = errorToThrow != nil ? " error=\(errorToThrow!)" : ""
         if count == 1 {
-          console.log("\(#function): handle mw in:", self)
+          console.log("\(#function):     run", middleware,
+                      "in", self, errorInfo)
         }
         else {
-          console.log("\(#function): handle mw \(i)-of-\(count) in:", self)
+          console.log("\(#function):     run[\(i)/\(count)]", middleware,
+                      "in", self, errorInfo)
         }
       }
       
@@ -249,13 +256,13 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
                               next: isLast ? endNext : next!)
       }
       catch (let e) {
-        if debug { console.log("\(#function):\(ids) catched:", e, "in", self) }
+        if debug { console.log("\(#function):     \(ids)catched:", e, "in", self) }
         errorToThrow = e
         
         #if false // crashes
         // TBD: is this right? If we get an exception, we assume that `next`
         //      was NOT called?
-        if debug { console.log("\(#function):\(ids) call next after error") }
+        if debug { console.log("\(#function):     \(ids)call next after error") }
         if isLast { endNext() } else { next!() }
         #endif
       }
