@@ -37,6 +37,7 @@ public extension RouteKeeper {
    *
    * Note: A Route is not a mountable object! I.e. this doesn't do the thing
    * you expect:
+   * TODO: is this actually true? A route seems to push baseUrl and such.
    *
    *     app.route("/admin"
    *       .get("/view") { .. }   // does NOT match /admin/view, but /view
