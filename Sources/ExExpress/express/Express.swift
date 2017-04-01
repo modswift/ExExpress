@@ -10,10 +10,12 @@ open class Express: SettingsHolder, MountableMiddlewareObject, RouteKeeper,
                     CustomStringConvertible
 {
   
-  let router   = Router()
-  var settings = [ String : Any ]()
+  public let router   : Router
+  public var settings = [ String : Any ]()
   
-  public init() {
+  public init(mount: String? = nil) {
+    router = Router(pattern: mount)
+    
     // defaults
     set("view engine", "mustache")
     engine("mustache", mustacheExpress)
