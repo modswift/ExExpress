@@ -64,7 +64,7 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
     }
   }
   
-  let debug      = true
+  let debug      = false
   var id         : String? // ye
   
   var middleware : [ MiddlewareHolder ]
