@@ -46,85 +46,172 @@ public extension RouteKeeper {
 
 // MARK: - Add Middleware
   
+// TODO: allow arrays
+// TBD: all the duplication below looks a little stupid, is there a better way
+//      w/o resorting to Any?
+  
 public extension RouteKeeper {
   
   @discardableResult
   public func use(_ cb: @escaping Middleware) -> Self {
-    add(route: Route(pattern: nil, method: nil, middleware: [cb]))
+    add(route: Route(pattern: nil, method: nil, middleware: cb))
     return self
   }
   
   @discardableResult
   public func use(_ p: String, _ cb: @escaping Middleware) -> Self {
-    add(route: Route(pattern: p, method: nil, middleware: [cb]))
+    add(route: Route(pattern: p, method: nil, middleware: cb))
     return self
   }
   
   @discardableResult
   public func all(_ p: String, _ cb: @escaping Middleware) -> Self {
-    add(route: Route(pattern: p, method: nil, middleware: [cb]))
+    add(route: Route(pattern: p, method: nil, middleware: cb))
     return self
   }
   
   @discardableResult
   public func get(_ p: String, _ cb: @escaping Middleware) -> Self {
-    add(route: Route(pattern: p, method: "GET", middleware: [cb]))
+    add(route: Route(pattern: p, method: "GET", middleware: cb))
     return self
   }
   @discardableResult
   public func post(_ p: String, _ cb: @escaping Middleware) -> Self {
-    add(route: Route(pattern: p, method: "POST", middleware: [cb]))
+    add(route: Route(pattern: p, method: "POST", middleware: cb))
     return self
   }
   @discardableResult
   public func head(_ p: String, _ cb: @escaping Middleware) -> Self {
-    add(route: Route(pattern: p, method: "HEAD", middleware: [cb]))
+    add(route: Route(pattern: p, method: "HEAD", middleware: cb))
     return self
   }
   @discardableResult
   public func put(_ p: String, _ cb: @escaping Middleware) -> Self {
-    add(route: Route(pattern: p, method: "PUT", middleware: [cb]))
+    add(route: Route(pattern: p, method: "PUT", middleware: cb))
     return self
   }
   @discardableResult
   public func del(_ p: String, _ cb: @escaping Middleware) -> Self {
-    add(route: Route(pattern: p, method: "DELETE", middleware: [cb]))
+    add(route: Route(pattern: p, method: "DELETE", middleware: cb))
     return self
   }
   @discardableResult
   public func patch(_ p: String, _ cb: @escaping Middleware) -> Self {
-    add(route: Route(pattern: p, method: "PATCH", middleware: [cb]))
+    add(route: Route(pattern: p, method: "PATCH", middleware: cb))
     return self
   }
 
   @discardableResult
   public func get(_ cb: @escaping Middleware) -> Self {
-    add(route: Route(pattern: nil, method: "GET", middleware: [cb]))
+    add(route: Route(pattern: nil, method: "GET", middleware: cb))
     return self
   }
   @discardableResult
   public func post(_ cb: @escaping Middleware) -> Self {
-    add(route: Route(pattern: nil, method: "POST", middleware: [cb]))
+    add(route: Route(pattern: nil, method: "POST", middleware: cb))
     return self
   }
   @discardableResult
   public func head(_ cb: @escaping Middleware) -> Self {
-    add(route: Route(pattern: nil, method: "HEAD", middleware: [cb]))
+    add(route: Route(pattern: nil, method: "HEAD", middleware: cb))
     return self
   }
   @discardableResult
   public func put(_ cb: @escaping Middleware) -> Self {
-    add(route: Route(pattern: nil, method: "PUT", middleware: [cb]))
+    add(route: Route(pattern: nil, method: "PUT", middleware: cb))
     return self
   }
   @discardableResult
   public func del(_ cb: @escaping Middleware) -> Self {
-    add(route: Route(pattern: nil, method: "DELETE", middleware: [cb]))
+    add(route: Route(pattern: nil, method: "DELETE", middleware: cb))
     return self
   }
   @discardableResult
   public func patch(_ cb: @escaping Middleware) -> Self {
-    add(route: Route(pattern: nil, method: "PATCH", middleware: [cb]))
+    add(route: Route(pattern: nil, method: "PATCH", middleware: cb))
+    return self
+  }
+}
+
+public extension RouteKeeper {
+    
+  @discardableResult
+  public func use(_ cb: @escaping ErrorMiddleware) -> Self {
+    add(route: Route(pattern: nil, method: nil, middleware: cb))
+    return self
+  }
+  
+  @discardableResult
+  public func use(_ p: String, _ cb: @escaping ErrorMiddleware) -> Self {
+    add(route: Route(pattern: p, method: nil, middleware: cb))
+    return self
+  }
+  
+  @discardableResult
+  public func all(_ p: String, _ cb: @escaping ErrorMiddleware) -> Self {
+    add(route: Route(pattern: p, method: nil, middleware: cb))
+    return self
+  }
+  
+  @discardableResult
+  public func get(_ p: String, _ cb: @escaping ErrorMiddleware) -> Self {
+    add(route: Route(pattern: p, method: "GET", middleware: cb))
+    return self
+  }
+  @discardableResult
+  public func post(_ p: String, _ cb: @escaping ErrorMiddleware) -> Self {
+    add(route: Route(pattern: p, method: "POST", middleware: cb))
+    return self
+  }
+  @discardableResult
+  public func head(_ p: String, _ cb: @escaping ErrorMiddleware) -> Self {
+    add(route: Route(pattern: p, method: "HEAD", middleware: cb))
+    return self
+  }
+  @discardableResult
+  public func put(_ p: String, _ cb: @escaping ErrorMiddleware) -> Self {
+    add(route: Route(pattern: p, method: "PUT", middleware: cb))
+    return self
+  }
+  @discardableResult
+  public func del(_ p: String, _ cb: @escaping ErrorMiddleware) -> Self {
+    add(route: Route(pattern: p, method: "DELETE", middleware: cb))
+    return self
+  }
+  @discardableResult
+  public func patch(_ p: String, _ cb: @escaping ErrorMiddleware) -> Self {
+    add(route: Route(pattern: p, method: "PATCH", middleware: cb))
+    return self
+  }
+
+  @discardableResult
+  public func get(_ cb: @escaping ErrorMiddleware) -> Self {
+    add(route: Route(pattern: nil, method: "GET", middleware: cb))
+    return self
+  }
+  @discardableResult
+  public func post(_ cb: @escaping ErrorMiddleware) -> Self {
+    add(route: Route(pattern: nil, method: "POST", middleware: cb))
+    return self
+  }
+  @discardableResult
+  public func head(_ cb: @escaping ErrorMiddleware) -> Self {
+    add(route: Route(pattern: nil, method: "HEAD", middleware: cb))
+    return self
+  }
+  @discardableResult
+  public func put(_ cb: @escaping ErrorMiddleware) -> Self {
+    add(route: Route(pattern: nil, method: "PUT", middleware: cb))
+    return self
+  }
+  @discardableResult
+  public func del(_ cb: @escaping ErrorMiddleware) -> Self {
+    add(route: Route(pattern: nil, method: "DELETE", middleware: cb))
+    return self
+  }
+  @discardableResult
+  public func patch(_ cb: @escaping ErrorMiddleware) -> Self {
+    add(route: Route(pattern: nil, method: "PATCH", middleware: cb))
     return self
   }
 }
@@ -148,54 +235,63 @@ public extension RouteKeeper {
   
   @discardableResult
   public func use(_ mw: MiddlewareObject) -> Self {
-    return use(mw.middleware)
+    add(route: Route(pattern: nil, method: nil, middleware: mw))
+    return self
   }
   
   @discardableResult
   public func use(_ p: String, _ mw: MiddlewareObject) -> Self {
     mountIfPossible(pattern: p, parent: self, child: mw)
-    return use(p, mw.middleware)
+    add(route: Route(pattern: p, method: nil, middleware: mw))
+    return self
   }
   
   @discardableResult
   public func all(_ p: String, _ mw: MiddlewareObject) -> Self {
     mountIfPossible(pattern: p, parent: self, child: mw)
-    return all(p, mw.middleware)
+    add(route: Route(pattern: p, method: nil, middleware: mw))
+    return self
   }
   
   @discardableResult
   public func get(_ p: String, _ mw: MiddlewareObject) -> Self {
     mountIfPossible(pattern: p, parent: self, child: mw)
-    return get(p, mw.middleware)
+    add(route: Route(pattern: p, method: "GET", middleware: mw))
+    return self
   }
   
   @discardableResult
   public func post(_ p: String, _ mw: MiddlewareObject) -> Self {
     mountIfPossible(pattern: p, parent: self, child: mw)
-    return post(p, mw.middleware)
+    add(route: Route(pattern: p, method: "POST", middleware: mw))
+    return self
   }
   
   @discardableResult
   public func head(_ p: String, _ mw: MiddlewareObject) -> Self {
     mountIfPossible(pattern: p, parent: self, child: mw)
-    return head(p, mw.middleware)
+    add(route: Route(pattern: p, method: "HEAD", middleware: mw))
+    return self
   }
   
   @discardableResult
   public func put(_ p: String, _ mw: MiddlewareObject) -> Self {
     mountIfPossible(pattern: p, parent: self, child: mw)
-    return put(p, mw.middleware)
+    add(route: Route(pattern: p, method: "PUT", middleware: mw))
+    return self
   }
   
   @discardableResult
   public func del(_ p: String, _ mw: MiddlewareObject) -> Self {
     mountIfPossible(pattern: p, parent: self, child: mw)
-    return del(p, mw.middleware)
+    add(route: Route(pattern: p, method: "DELETE", middleware: mw))
+    return self
   }
   
   @discardableResult
   public func patch(_ p: String, _ mw: MiddlewareObject) -> Self {
     mountIfPossible(pattern: p, parent: self, child: mw)
-    return patch(p, mw.middleware)
+    add(route: Route(pattern: p, method: "PATCH", middleware: mw))
+    return self
   }
 }

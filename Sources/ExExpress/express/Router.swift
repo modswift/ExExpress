@@ -23,7 +23,8 @@ open class Router: MiddlewareObject, RouteKeeper {
   var routes = [ Route ]()
   
   public init(_ middleware: Middleware...) {
-    routes.append(Route(pattern: nil, method: nil, middleware: middleware))
+    routes.append(Route(pattern: nil, method: nil,
+                        middleware: middleware.map({ .middleware($0) })))
   }
   
   public func add(route e: Route) {

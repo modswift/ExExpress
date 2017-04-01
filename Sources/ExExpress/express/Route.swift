@@ -40,7 +40,7 @@ private let patternMarker : UInt8 = 58 // ':'
  */
 open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
   
-  enum MiddlewareHolder {
+  public enum MiddlewareHolder {
     case object(MiddlewareObject)
     case middleware(Middleware)
     case errorMiddleware(ErrorMiddleware)
@@ -50,32 +50,53 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
   
   var middleware : [ MiddlewareHolder ]
   
-  let methods    : [ String ]?
+  let methods    : [ String ]? // FIXME: use an enum, strings are slow to match
   
   let urlPattern : [ RoutePattern ]?
     // FIXME: all this works a little different in Express.js. Exact matches,
     //        non-path-component matches, regex support etc.
   
-  public init(pattern: String?, method: String?, middleware: [Middleware]) {
+  public init(pattern: String?, method: String?,
+              middleware: [ MiddlewareHolder ])
+  {
     // FIXME: urlPrefix should be url or sth
     
     if let m = method { self.methods = [ m ] }
     else { self.methods = nil }
     
-    self.middleware = middleware.map { .middleware($0) }
+    self.middleware = middleware
     
     self.urlPattern = pattern != nil ? RoutePattern.parse(pattern!) : nil
 
     if debug { console.log("\(#function): setup route: \(self)") }
   }
   
+  public convenience init(pattern: String?, method: String?,
+                          middleware: @escaping Middleware)
+  {
+    self.init(pattern: pattern, method: method,
+              middleware: [ MiddlewareHolder.middleware(middleware) ])
+  }
+  public convenience init(pattern: String?, method: String?,
+                          middleware: @escaping ErrorMiddleware)
+  {
+    self.init(pattern: pattern, method: method,
+              middleware: [ MiddlewareHolder.errorMiddleware(middleware) ])
+  }
+  public convenience init(pattern: String?, method: String?,
+                          middleware: MiddlewareObject)
+  {
+    self.init(pattern: pattern, method: method,
+              middleware: [ MiddlewareHolder.object(middleware) ])
+  }
+  
   
   // MARK: MiddlewareObject
   
-  public func handle(error       : Error?,
-                     request  req: IncomingMessage,
-                     response res: ServerResponse,
-                     next        :  @escaping Next) throws
+  public func handle(error        : Error?,
+                     request  req : IncomingMessage,
+                     response res : ServerResponse,
+                     next         :  @escaping Next) throws
   {
     let debug = self.debug
     
