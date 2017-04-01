@@ -29,10 +29,10 @@ public func pause(_ timeout: Int, _ error: Error? = nil) -> Middleware {
     usleep(useconds_t(micro))
     
     if let error = error {
-      try next(error)
+      throw error
     }
     else {
-      try next()
+      next()
     }
   }
 }
