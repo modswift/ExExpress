@@ -6,7 +6,7 @@
 //  Copyright © 2017 ZeeZide GmbH. All rights reserved.
 //
 
-private let debugMatcher = true
+private let debugMatcher = false
 
 enum RoutePattern : CustomStringConvertible {
   case Root             // /

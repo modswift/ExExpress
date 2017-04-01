@@ -40,7 +40,7 @@ private let patternMarker : UInt8 = 58 // ':'
  */
 open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
   
-  let debug      = true
+  let debug      = false
   
   var middleware : [ Middleware ]
   
@@ -84,19 +84,37 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
     let matchPath : String?
     if let pattern = urlPattern {
       // TODO: consider mounting!
-      let escapedPathComponents = split(urlPath: req.url)
-      
-      matchPath = RoutePattern.match(pattern: pattern,
-                                     against: escapedPathComponents)
-      
-      guard let match = matchPath else {
-        if debug {
-          console.log("\(#function): route path does not match, next:", self)
+      if let base = req.baseURL {
+        let mountPath = req.url.substring(from: base.endIndex)
+        let escapedPathComponents = split(urlPath: mountPath)
+
+        let mountMatchPath = RoutePattern.match(pattern: pattern,
+                                                against: escapedPathComponents)
+        guard let match = mountMatchPath else {
+          if debug {
+            console.log("\(#function): mount route path does not match, next:",
+                        self)
+          }
+          return try cb()
         }
-        return try cb()
+        
+        matchPath = base + match
+      }
+      else {
+        let escapedPathComponents = split(urlPath: req.url)
+        
+        guard let mp = RoutePattern.match(pattern: pattern,
+                                          against: escapedPathComponents)
+         else {
+          if debug {
+            console.log("\(#function): route path does not match, next:", self)
+          }
+          return try cb()
+         }
+        matchPath = mp
       }
       
-      if debug { console.log("\(#function) path match:", match) }
+      if debug { console.log("\(#function) path match:", matchPath) }
     }
     else {
       matchPath = nil
