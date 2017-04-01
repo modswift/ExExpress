@@ -68,6 +68,8 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
   let id         : String?
   
   var middleware : [ MiddlewareHolder ]
+  public var isEmpty : Bool { return middleware.isEmpty }
+  public var count   : Int  { return middleware.count }
   
   let methods    : [ String ]? // FIXME: use an enum, strings are slow to match
   

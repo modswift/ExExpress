@@ -134,14 +134,14 @@ open class Express: SettingsHolder, MountableMiddlewareObject, RouteKeeper,
   open var description : String {
     var ms = "<\(type(of: self)):"
     
-    if router.routes.isEmpty {
+    if router.isEmpty {
       ms += " no-routes"
     }
-    else if router.routes.count == 1 {
+    else if router.count == 1 {
       ms += " route"
     }
     else {
-      ms += " #routes=\(router.routes.count)"
+      ms += " #routes=\(router.count)"
     }
     
     if let mountPath = mountPath, !mountPath.isEmpty {
