@@ -13,8 +13,8 @@ open class Express: SettingsHolder, MountableMiddlewareObject, RouteKeeper,
   public let router   : Router
   public var settings = [ String : Any ]()
   
-  public init(mount: String? = nil) {
-    router = Router(pattern: mount)
+  public init(id: String? = nil, mount: String? = nil) {
+    router = Router(id: id, pattern: mount)
     
     // defaults
     set("view engine", "mustache")
