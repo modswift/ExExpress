@@ -13,6 +13,9 @@ public typealias Next = (Any...) -> Void
 public typealias Middleware =
          ( IncomingMessage, ServerResponse, @escaping Next )
          throws -> Void
+public typealias ErrorMiddleware =
+         ( Error, IncomingMessage, ServerResponse, @escaping Next )
+         throws -> Void
 
 
 public class Connect {
