@@ -54,9 +54,11 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
         case .object(let mw):
           try mw.handle(error: error, request: request, response: response,
                         next: next)
+        
         case .middleware(let mw):
           guard error == nil else { return next() }
           try mw(request, response, next)
+        
         case .errorMiddleware(let mw):
           guard let error = error else { return next() }
           try mw(error, request, response, next)
@@ -65,7 +67,7 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
   }
   
   let debug      = false
-  var id         : String? // ye
+  var id         : String?
   
   var middleware : [ MiddlewareHolder ]
   public var isEmpty : Bool { return middleware.isEmpty }
@@ -127,10 +129,10 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
   
   // MARK: MiddlewareObject
   
-  public func handle(error        : Error?,
-                     request  req : IncomingMessage,
-                     response res : ServerResponse,
-                     next         :  @escaping Next) throws
+  public func handle(error    errorIn    : Error?,
+                     request  req        : IncomingMessage,
+                     response res        : ServerResponse,
+                     next     parentNext :  @escaping Next) throws
   {
     let debug = self.debug
     let ids   = logPrefix
@@ -141,7 +143,7 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
         if debug {
           console.log("\(ids) route method does not match, next:", self)
         }
-        return next()
+        return parentNext()
       }
     }
     
@@ -161,7 +163,7 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
           if debug {
             console.log("\(ids) mount route path does not match, next:", self)
           }
-          return next()
+          return parentNext()
         }
         
         matchPath = base + match
@@ -177,7 +179,7 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
             console.log("\(ids) route path does not match, next:",
               self)
           }
-          return next()
+          return parentNext()
          }
         matchPath = mp
       }
@@ -195,7 +197,7 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
       if debug {
         console.log("\(ids) route has no middleware, next:", self)
       }
-      return next()
+      return parentNext()
     }
     
     if debug { console.log("\(ids) * route matches") }
@@ -211,26 +213,37 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
       req.baseURL = mp
       if debug { console.log("\(ids)   push baseURL:", req.baseURL) }
     }
+
+    var errorToThrow : Error? = nil
+    var error        : Error? = errorIn
     
     let endNext : Next = { _ in
       req.params  = oldParams
       req.route   = oldRoute
       req.baseURL = oldBase
-      if debug { console.log("\(ids)   end-next:", self) }
-      return next()
+      errorToThrow = error
+      
+      // invoke the next middleware above us, if there was no error
+      if let error = errorToThrow {
+        // different way to pass back control
+        if debug { console.log("\(ids)   end-next-error:", self, error) }
+      }
+      else {
+        if debug { console.log("\(ids)   end-next:", self) }
+        parentNext()
+      }
     }
     
     
     // loop over route middleware
     let stack = self.middleware
     let count = stack.count // optimization ;->
-    var next  : Next? = { _ in } // cannot be let as it's self-referencing
     
     var i = 0 // capture position in matching-middleware array (shared)
     
-    if debug { console.log("\(ids)   walk stack #\(count):", self) }
+    if debug { console.log("\(ids)   walk stack #\(count) of", self) }
     
-    var errorToThrow : Error? = nil
+    var next  : Next = { _ in } // cannot be let, it is self-referencing.
     next = { args in
       
       // grab next item from middleware array
@@ -238,10 +251,9 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
       i += 1 // this is shared between the blocks, move position in array
 
       if debug {
-        let errorInfo = errorToThrow != nil ? " error=\(errorToThrow!)" : ""
+        let errorInfo = error != nil ? " error=\(error!)" : " no-error"
         if count == 1 {
-          console.log("\(ids)     run", middleware,
-                      "in", self, errorInfo)
+          console.log("\(ids)     run", middleware, "in", self, errorInfo)
         }
         else {
           console.log("\(ids)     run[\(i)/\(count)]", middleware,
@@ -253,32 +265,43 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
       // middleware. the latter can be the 'endNext'
       let isLast = i == count
       do {
-        try middleware.handle(error: errorToThrow,
+        try middleware.handle(error: error,
                               request: req, response: res,
-                              next: isLast ? endNext : next!)
+                              next: isLast ? endNext : next)
       }
       catch (let e) {
         if debug { console.log("\(ids)     catched:", e, "in", self) }
-        errorToThrow = e
         
-        #if false // crashes
-        // TBD: is this right? If we get an exception, we assume that `next`
-        //      was NOT called?
+        error = e
+          // The important part, from now own we have the error and will execute
+          // error middleware. And if we leave this middleware (endNext), we
+          // will throw, which is going to be catched by the outer scope.
+          // BUT: Only if endNext was actually called. If an error middleware
+          // did handle the error (and not call its next), the `errorToThrow`
+          // is not set.
+        
+        // In this case we assume the middleware has NOT called next yet!
+        // Note: next itself does NOT throw. It would track a handled error
+        //       in its outer stack.
+        // So we call next (or endNext) to continue ...
         if debug { console.log("\(ids)     call next after error") }
-        if isLast { endNext() } else { next!() }
-        #endif
+        if isLast { endNext() } else { next() }
       }
       if isLast {
         if debug { console.log("\(ids)     last mw of:", self) }
-        next = nil
+        //next = nil
       }
     }
     
-    // inititate the traversal
-    next!()
-   
-    // TBD: do we still want to do this with error middleware? Only on final
-    //      handler?
+    // Inititate the traversal. This walks the middleware array by recursively
+    // calling the same (if the middleware choses to 'continue' by calling 
+    // next).
+    next()
+
+    // In this case we didn't call `parentNext` in the endNext handler. Instead
+    // we throw to bubble up the error. The outer Route will capture it, call
+    // the next we got passed in and all will be good :-)
+    // TBD: instead call parentNext(error)?
     if let e = errorToThrow {
       if debug { console.log("\(ids) rethrow:", e) }
       throw e
