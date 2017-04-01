@@ -291,8 +291,7 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
     var ms = "<Route:"
     
     if let id = id {
-      ms += " "
-      ms += id
+      ms += " [\(id)]"
     }
     
     var hadLimit = false
