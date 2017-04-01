@@ -132,6 +132,7 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
                      next         :  @escaping Next) throws
   {
     let debug = self.debug
+    let ids   = id != nil ? " [\(id!)]" : ""
     
     if let methods = self.methods {
       guard methods.contains(req.method) else {
@@ -211,7 +212,7 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
       req.params  = oldParams
       req.route   = oldRoute
       req.baseURL = oldBase
-      if debug { console.log("\(#function): end-next:", self) }
+      if debug { console.log("\(#function):\(ids) end-next:", self) }
       return next()
     }
     
@@ -248,8 +249,15 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
                               next: isLast ? endNext : next!)
       }
       catch (let e) {
-        if debug { console.log("\(#function): catched:", e) }
+        if debug { console.log("\(#function):\(ids) catched:", e, "in", self) }
         errorToThrow = e
+        
+        #if false // crashes
+        // TBD: is this right? If we get an exception, we assume that `next`
+        //      was NOT called?
+        if debug { console.log("\(#function):\(ids) call next after error") }
+        if isLast { endNext() } else { next!() }
+        #endif
       }
       if isLast {
         if debug { console.log("\(#function): last mw of:", self) }
@@ -263,7 +271,7 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
     // TBD: do we still want to do this with error middleware? Only on final
     //      handler?
     if let e = errorToThrow {
-      if debug { console.log("\(#function): rethrow:", e) }
+      if debug { console.log("\(#function):\(ids) rethrow:", e) }
       throw e
     }
   }
