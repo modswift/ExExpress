@@ -65,7 +65,7 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
   }
   
   let debug      = true
-  let id         : String?
+  var id         : String? // ye
   
   var middleware : [ MiddlewareHolder ]
   public var isEmpty : Bool { return middleware.isEmpty }
@@ -77,6 +77,7 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
     // FIXME: all this works a little different in Express.js. Exact matches,
     //        non-path-component matches, regex support etc.
   
+ 
   public init(id: String? = nil, pattern: String?, method: String?,
               middleware: [ MiddlewareHolder ])
   {
@@ -88,13 +89,13 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
     self.middleware = middleware
     
     self.urlPattern = pattern != nil ? RoutePattern.parse(pattern!) : nil
-
+      
     if debug {
       if self.middleware.isEmpty {
-        console.log("\(#function): setup route w/o middleware: \(self)")
+        console.log("\(logPrefix) setup route w/o middleware: \(self)")
       }
       else {
-        console.log("\(#function): setup route: \(self)")
+        console.log("\(logPrefix) setup route: \(self)")
       }
     }
   }
@@ -132,12 +133,12 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
                      next         :  @escaping Next) throws
   {
     let debug = self.debug
-    let ids   = id != nil ? "[\(id!)] " : ""
+    let ids   = logPrefix
     
     if let methods = self.methods {
       guard methods.contains(req.method) else {
         if debug {
-          console.log("\(#function): route method does not match, next:", self)
+          console.log("\(ids) route method does not match, next:", self)
         }
         return next()
       }
@@ -157,8 +158,7 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
                                                 variables : &newParams)
         guard let match = mountMatchPath else {
           if debug {
-            console.log("\(#function): mount route path does not match, next:",
-                        self)
+            console.log("\(ids) mount route path does not match, next:", self)
           }
           return next()
         }
@@ -173,14 +173,15 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
                                           variables : &newParams)
          else {
           if debug {
-            console.log("\(#function): route path does not match, next:", self)
+            console.log("\(ids) route path does not match, next:",
+              self)
           }
           return next()
          }
         matchPath = mp
       }
       
-      if debug { console.log("\(#function): path match:", matchPath) }
+      if debug { console.log("\(ids) path match:", matchPath) }
       
       params = newParams
     }
@@ -191,12 +192,12 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
     
     guard !self.middleware.isEmpty else {
       if debug {
-        console.log("\(#function): route has no middleware, next:", self)
+        console.log("\(ids) route has no middleware, next:", self)
       }
       return next()
     }
     
-    if debug { console.log("\(#function): route matches:", self) }
+    if debug { console.log("\(ids) route matches:", self) }
     
     
     // push route state
@@ -207,14 +208,14 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
     req.route   = self
     if let mp = matchPath {
       req.baseURL = mp
-      if debug { console.log("\(#function):   push baseURL:", req.baseURL) }
+      if debug { console.log("\(ids)   push baseURL:", req.baseURL) }
     }
     
     let endNext : Next = { _ in
       req.params  = oldParams
       req.route   = oldRoute
       req.baseURL = oldBase
-      if debug { console.log("\(#function):\(ids) end-next:", self) }
+      if debug { console.log("\(ids)   end-next:", self) }
       return next()
     }
     
@@ -226,7 +227,7 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
     
     var i = 0 // capture position in matching-middleware array (shared)
     
-    if debug { console.log("\(#function):   walk stack #\(count):", self) }
+    if debug { console.log("\(ids)   walk stack #\(count):", self) }
     
     var errorToThrow : Error? = nil
     next = { args in
@@ -238,11 +239,11 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
       if debug {
         let errorInfo = errorToThrow != nil ? " error=\(errorToThrow!)" : ""
         if count == 1 {
-          console.log("\(#function):     run", middleware,
+          console.log("\(ids)     run", middleware,
                       "in", self, errorInfo)
         }
         else {
-          console.log("\(#function):     run[\(i)/\(count)]", middleware,
+          console.log("\(ids)     run[\(i)/\(count)]", middleware,
                       "in", self, errorInfo)
         }
       }
@@ -256,18 +257,18 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
                               next: isLast ? endNext : next!)
       }
       catch (let e) {
-        if debug { console.log("\(#function):     \(ids)catched:", e, "in", self) }
+        if debug { console.log("\(ids)     catched:", e, "in", self) }
         errorToThrow = e
         
         #if false // crashes
         // TBD: is this right? If we get an exception, we assume that `next`
         //      was NOT called?
-        if debug { console.log("\(#function):     \(ids)call next after error") }
+        if debug { console.log("\(ids)     call next after error") }
         if isLast { endNext() } else { next!() }
         #endif
       }
       if isLast {
-        if debug { console.log("\(#function): last mw of:", self) }
+        if debug { console.log("\(ids)     last mw of:", self) }
         next = nil
       }
     }
@@ -278,7 +279,7 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
     // TBD: do we still want to do this with error middleware? Only on final
     //      handler?
     if let e = errorToThrow {
-      if debug { console.log("\(#function):\(ids) rethrow:", e) }
+      if debug { console.log("\(ids) rethrow:", e) }
       throw e
     }
   }
@@ -301,6 +302,16 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
   
   
   // MARK: - Description
+  
+  lazy var logPrefix : String = {
+    let logPrefixPad = 20
+    let id = self.id ?? ObjectIdentifier(self).debugDescription
+    let p  = id
+    let ids = p.characters.count < logPrefixPad
+      ? p + String(repeating: " ", count: logPrefixPad - p.characters.count)
+      : p
+    return "[\(ids)]:"
+  }()
   
   public var description : String {
     var ms = "<Route:"
