@@ -48,7 +48,7 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
     public func handle(error    : Error?,
                        request  : IncomingMessage,
                        response : ServerResponse,
-                       next     : @escaping Next) throws
+                       next     : Next) throws
     {
       switch self {
         case .object(let mw):
@@ -132,7 +132,7 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
   public func handle(error    errorIn    : Error?,
                      request  req        : IncomingMessage,
                      response res        : ServerResponse,
-                     next     parentNext :  @escaping Next) throws
+                     next     parentNext : Next) throws
   {
     let debug = self.debug
     let ids   = logPrefix
@@ -216,25 +216,7 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
 
     var errorToThrow : Error? = nil
     var error        : Error? = errorIn
-    
-    let endNext : Next = { _ in
-      req.params  = oldParams
-      req.route   = oldRoute
-      req.baseURL = oldBase
-      errorToThrow = error
-      
-      // invoke the next middleware above us, if there was no error
-      if let error = errorToThrow {
-        // different way to pass back control
-        if debug { console.log("\(ids)   end-next-error:", self, error) }
-      }
-      else {
-        if debug { console.log("\(ids)   end-next:", self) }
-        parentNext()
-      }
-    }
-    
-    
+
     // loop over route middleware
     let stack = self.middleware
     let count = stack.count // optimization ;->
@@ -243,12 +225,12 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
     
     if debug { console.log("\(ids)   walk stack #\(count) of", self) }
     
-    var next  : Next = { _ in } // cannot be let, it is self-referencing.
-    next = { args in
-      
+    // Inititate the traversal. This synchronous implementation just walks the
+    // array. Much easier than the next-closure back-n-forth of async
+    // middleware :-)
+    for i in 0..<count {
       // grab next item from middleware array
       let middleware = stack[i]
-      i += 1 // this is shared between the blocks, move position in array
 
       if debug {
         let errorInfo = error != nil ? " error=\(error!)" : " no-error"
@@ -264,10 +246,29 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
       // call the middleware - which gets the handle to go to the 'next'
       // middleware. the latter can be the 'endNext'
       let isLast = i == count
+      var didCallNext = false           // ref-captured
+      var nextArgs    : [ Any ]? = nil  // ref-captured
       do {
         try middleware.handle(error: error,
-                              request: req, response: res,
-                              next: isLast ? endNext : next)
+                              request: req, response: res, next: { args in
+                                // in this sync implementation this is just a
+                                // fancy inout-return value ;-)
+                                didCallNext = true
+                                nextArgs    = args
+                              })
+        
+        // throw on behalf of the middleware.
+        if let arg0 = nextArgs?.first {
+          if let error = arg0 as? Swift.Error {
+            throw error
+          }
+          else if let s = arg0 as? String {
+            throw ValueError(value: s)
+          }
+          else {
+            throw ValueError(value: arg0)
+          }
+        }
       }
       catch (let e) {
         if debug { console.log("\(ids)     catched:", e, "in", self) }
@@ -283,21 +284,43 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
         // In this case we assume the middleware has NOT called next yet!
         // Note: next itself does NOT throw. It would track a handled error
         //       in its outer stack.
-        // So we call next (or endNext) to continue ...
-        if debug { console.log("\(ids)     call next after error") }
-        if isLast { endNext() } else { next() }
+        if didCallNext {
+          if debug { console.log("\(ids)     did call next before error") }
+        }
+        else {
+          if debug { console.log("\(ids)     call next after error") }
+          didCallNext = true
+        }
       }
       if isLast {
         if debug { console.log("\(ids)     last mw of:", self) }
-        //next = nil
+      }
+      
+      if !didCallNext {
+        if debug { console.log("\(ids)     did not call next, stop:", self) }
+        break
       }
     }
-    
-    // Inititate the traversal. This walks the middleware array by recursively
-    // calling the same (if the middleware choses to 'continue' by calling 
-    // next).
-    next()
 
+    
+    /* end-next */
+    
+    req.params  = oldParams
+    req.route   = oldRoute
+    req.baseURL = oldBase
+    errorToThrow = error
+    
+    // invoke the next middleware above us, if there was no error
+    if let error = errorToThrow {
+      // different way to pass back control
+      if debug { console.log("\(ids)   end-next-error:", self, error) }
+    }
+    else {
+      if debug { console.log("\(ids)   end-next:", self) }
+      parentNext()
+    }
+    
+    
     // In this case we didn't call `parentNext` in the endNext handler. Instead
     // we throw to bubble up the error. The outer Route will capture it, call
     // the next we got passed in and all will be good :-)
@@ -375,6 +398,10 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
     return ms
   }
   
+}
+
+struct ValueError<T> : Swift.Error {
+  let value : T
 }
 
 

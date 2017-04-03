@@ -26,6 +26,15 @@ public protocol MiddlewareObject {
   func handle(error    : Error?,
               request  : IncomingMessage,
               response : ServerResponse,
+              next     : Next) throws
+  
+}
+
+public protocol AsyncMiddlewareObject {
+  
+  func handle(error    : Error?,
+              request  : IncomingMessage,
+              response : ServerResponse,
               next     : @escaping Next) throws
   
 }

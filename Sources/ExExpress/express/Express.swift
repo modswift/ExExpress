@@ -27,7 +27,7 @@ open class Express: SettingsHolder, MountableMiddlewareObject, RouteKeeper,
   open func handle(error        : Error?,
                    request  req : IncomingMessage,
                    response res : ServerResponse,
-                   next         : @escaping Next) throws
+                   next         : Next) throws
   {
     let oldApp = req.app
     let oldReq = res.request
