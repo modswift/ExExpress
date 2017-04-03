@@ -6,7 +6,7 @@
 //  Copyright © 2016 ZeeZide GmbH. All rights reserved.
 //
 
-private let patternMarker : UInt8 = 58 // ':'
+import Dispatch
 
 /**
  * A Route is a middleware which wraps another middleware and guards it by a
@@ -44,6 +44,8 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
     case object(MiddlewareObject)
     case middleware(Middleware)
     case errorMiddleware(ErrorMiddleware)
+    case asyncMiddleware(AsyncMiddleware)
+    case asyncErrorMiddleware(AsyncErrorMiddleware)
     
     public func handle(error    : Error?,
                        request  : IncomingMessage,
@@ -62,6 +64,30 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
         case .errorMiddleware(let mw):
           guard let error = error else { return next() }
           try mw(error, request, response, next)
+        
+        case .asyncMiddleware(let mw):
+          #if WITH_ASYNC_SUPPORT
+            // FIXME: this is not the full solution, it only works if the
+            //        middleware calls next, not if it doesn't. Not sure how
+            //        to solve this, also unblock done in the Response when
+            //        something is written? Might work.
+            var done = DispatchSemaphore(value: 0)
+            workerQueue.async {
+              mw(request, response) {
+                done.signal()
+              }
+            }
+            let timeout = DispatchTime.now() +
+                          DispatchTimeInterval.milliseconds(asyncTimeoutInMS)
+            let rc = done.wait(timeout: timeout)
+            if rc == .timedOut {
+              throw AsyncMiddlewareError.timeout
+            }
+          #else
+            fatalError("async middleware is not implemented yet")
+          #endif
+        case .asyncErrorMiddleware(let mw):
+          fatalError("async middleware is not implemented yet")
       }
     }
   }
@@ -388,9 +414,11 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
     }
     else {
       switch middleware[0] {
-        case .object    (let mw): ms += " \(mw)"
-        case .middleware:         ms += " mw"
-        case .errorMiddleware:    ms += " errmw"
+        case .object    (let mw):   ms += " \(mw)"
+        case .middleware:           ms += " mw"
+        case .errorMiddleware:      ms += " errmw"
+        case .asyncMiddleware:      ms += " async-mw"
+        case .asyncErrorMiddleware: ms += " async-errmw"
       }
     }
     
@@ -403,6 +431,19 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
 struct ValueError<T> : Swift.Error {
   let value : T
 }
+enum AsyncMiddlewareError : Swift.Error {
+  case timeout
+}
+
+
+// MARK: - Helpers
+
+fileprivate let patternMarker : UInt8 = 58 // ':'
+fileprivate let workerQueue =
+                  DispatchQueue(label:      "de.zeezide.apex3.sync-async",
+                                attributes: DispatchQueue.Attributes.concurrent)
+fileprivate let asyncTimeoutInMS = 1000
+
 
 
 // MARK: - Request Extension
