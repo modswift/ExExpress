@@ -6,14 +6,23 @@
 //  Copyright © 2016 ZeeZide GmbH. All rights reserved.
 //
 
-/// TODO: document, what are the varargs in Next?
+// TODO: document, what are the varargs in Next?
+// - I think Express only supports an Error as the first argument (converting
+//   everything non-false into an Error)
 public typealias Next = (Any...) -> Void
 
 /// Supposed to call Next() when it is done.
 public typealias Middleware =
-         ( IncomingMessage, ServerResponse, @escaping Next )
+         ( IncomingMessage, ServerResponse, Next )
          throws -> Void
 public typealias ErrorMiddleware =
+         ( Error, IncomingMessage, ServerResponse, Next )
+         throws -> Void
+
+public typealias AsyncMiddleware =
+         ( IncomingMessage, ServerResponse, @escaping Next )
+         throws -> Void
+public typealias AsyncErrorMiddleware =
          ( Error, IncomingMessage, ServerResponse, @escaping Next )
          throws -> Void
 
