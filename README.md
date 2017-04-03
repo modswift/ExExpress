@@ -74,11 +74,8 @@ app.get("/express/") { req, res, _ in
 ### Who
 
 **mod_swift** is brought to you by
-[The Always Right Institute](http://www.alwaysrightinstitute.com)
-and
 [ZeeZide](http://zeezide.de).
 We like feedback, GitHub stars, cool contract work,
 presumably any form of praise you can think of.
-We don't like people who are wrong.
 
 There is a `#mod_swift` channel on the [Noze.io Slack](http://slack.noze.io).

@@ -133,6 +133,7 @@
 		E8AFFFBC1E6F1B780074266E /* TypeIs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TypeIs.swift; path = Sources/ExExpress/connect/TypeIs.swift; sourceTree = SOURCE_ROOT; };
 		E8BCF05E1E82CA1900F235C8 /* Freddy.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Freddy.framework; path = ../../../../dev/Swift/Freddy/build/Debug/Freddy.framework; sourceTree = "<group>"; };
 		E8BCF05F1E82CA1900F235C8 /* libmustache.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libmustache.dylib; path = "../../../../Library/Developer/Xcode/DerivedData/ExExpress-hcfwxpckgrptppdjjbzyjyvgvcgw/Build/Products/Debug/libmustache.dylib"; sourceTree = "<group>"; };
+		E8E6FE0A1E91D610008814D5 /* Package.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -176,6 +177,7 @@
 			isa = PBXGroup;
 			children = (
 				E82359B51E49F311000B3120 /* README.md */,
+				E8E6FE0A1E91D610008814D5 /* Package.swift */,
 				E82359291E49F06D000B3120 /* Sources */,
 				E81D11131E8EB7A30085B6E7 /* Tests */,
 				E82359281E49F066000B3120 /* Configurations */,
