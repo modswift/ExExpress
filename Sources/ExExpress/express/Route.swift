@@ -240,12 +240,11 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
       if debug { console.log("\(ids)   push baseURL:", req.baseURL) }
     }
 
-    var errorToThrow : Error? = nil
-    var error        : Error? = errorIn
-
     // loop over route middleware
-    let stack = self.middleware
-    let count = stack.count // optimization ;->
+    let count       = self.middleware.count // optimization ;->
+    var didCallNext = false           // ref-captured
+    var nextArgs    : [ Any ]? = nil  // ref-captured
+    var error       : Error? = errorIn
     
     var i = 0 // capture position in matching-middleware array (shared)
     
@@ -256,7 +255,7 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
     // middleware :-)
     for i in 0..<count {
       // grab next item from middleware array
-      let middleware = stack[i]
+      let middleware = self.middleware[i]
 
       if debug {
         let errorInfo = error != nil ? " error=\(error!)" : " no-error"
@@ -272,8 +271,8 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
       // call the middleware - which gets the handle to go to the 'next'
       // middleware. the latter can be the 'endNext'
       let isLast = i == count
-      var didCallNext = false           // ref-captured
-      var nextArgs    : [ Any ]? = nil  // ref-captured
+      didCallNext = false
+      nextArgs    = nil
       do {
         try middleware.handle(error: error,
                               request: req, response: res, next: { args in
@@ -331,29 +330,29 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
     
     /* end-next */
     
-    req.params  = oldParams
-    req.route   = oldRoute
-    req.baseURL = oldBase
-    errorToThrow = error
+    if didCallNext {
+      req.params  = oldParams
+      req.route   = oldRoute
+      req.baseURL = oldBase
     
-    // invoke the next middleware above us, if there was no error
-    if let error = errorToThrow {
-      // different way to pass back control
-      if debug { console.log("\(ids)   end-next-error:", self, error) }
+      if let error = error {
+        // different way to pass back control
+        if debug { console.log("\(ids)   end-next-error:", self, error) }
+        
+        // In this case we don't call `parentNext` in the endNext handler.
+        // Instead we throw to bubble up the error. 
+        // The outer Route will capture it, call the next we got passed in and
+        // all will be good :-)
+        // TBD: instead call parentNext(error)?
+        throw error
+      }
+      else {
+        if debug { console.log("\(ids)   end-next:", self) }
+        parentNext()
+      }
     }
     else {
-      if debug { console.log("\(ids)   end-next:", self) }
-      parentNext()
-    }
-    
-    
-    // In this case we didn't call `parentNext` in the endNext handler. Instead
-    // we throw to bubble up the error. The outer Route will capture it, call
-    // the next we got passed in and all will be good :-)
-    // TBD: instead call parentNext(error)?
-    if let e = errorToThrow {
-      if debug { console.log("\(ids) rethrow:", e) }
-      throw e
+      if debug { console.log("\(ids)   did not call end-next.", self) }
     }
   }
   
