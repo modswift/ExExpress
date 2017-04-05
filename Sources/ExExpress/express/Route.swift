@@ -84,10 +84,10 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
               throw AsyncMiddlewareError.timeout
             }
           #else
-            fatalError("async middleware is not implemented yet")
+            fatalError("async middleware is not implemented yet: \(mw)")
           #endif
         case .asyncErrorMiddleware(let mw):
-          fatalError("async middleware is not implemented yet")
+          fatalError("async middleware is not implemented yet: \(mw)")
       }
     }
   }
@@ -245,8 +245,6 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
     var didCallNext = false           // ref-captured
     var nextArgs    : [ Any ]? = nil  // ref-captured
     var error       : Error? = errorIn
-    
-    var i = 0 // capture position in matching-middleware array (shared)
     
     if debug { console.log("\(ids)   walk stack #\(count) of", self) }
     
