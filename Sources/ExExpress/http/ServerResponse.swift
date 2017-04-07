@@ -23,14 +23,8 @@ public protocol ServerResponse : HttpMessageBaseType, WritableByteStreamType {
 
 public extension ServerResponse {
 
-  public func writeHead(_ statusCode: Int,
-                        _ headers: Dictionary<String, Any> = [:]) {
-    self.statusCode = statusCode
-    
-    // merge in headers
-    for (key, value) in headers {
-      setHeader(key, value)
-    }
+  public func writeHead(_ statusCode: Int) {
+    writeHead(statusCode, [:])
   }
 
 }
