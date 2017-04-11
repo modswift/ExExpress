@@ -63,7 +63,7 @@ enum RoutePattern : CustomStringConvertible {
     url.path = s
     let comps = url.escapedPathComponents!
     
-    var isFirst = false
+    var isFirst = true
     
     var pattern : [ RoutePattern ] = []
     for c in comps {
