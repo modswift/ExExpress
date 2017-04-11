@@ -6,12 +6,31 @@
 //  Copyright © 2016 ZeeZide GmbH. All rights reserved.
 //
 
+/**
+ * The Express application object
+ *
+ * An instance of this object represents an Express application. An Express
+ * application is essentially as set of routes, configuration, and templates.
+ * Applications are 'mountable' and can be added to other applications.
+ *
+ * In ApacheExpress you need to use the `ApacheExpress` subclass as the main
+ * entry point, but you can still hook up other Express applications as
+ * subapplications (e.g. mount an admin frontend under the `/admin` path).
+ *
+ * To get access to the active application object, use the `app` property of
+ * either `IncomingMessage` or `ServerResponse`.
+ *
+ * TODO: examples
+ * TODO: document view engines
+ * TODO: SettingsHolder
+ * TODO: RouteKeeper
+ */
 open class Express: SettingsHolder, MountableMiddlewareObject, RouteKeeper,
                     CustomStringConvertible
 {
   
-  public let router   : Router
-  public var settings = [ String : Any ]()
+  public let router        : Router
+  public var settingsStore = [ String : Any ]()
   
   public init(id: String? = nil, mount: String? = nil) {
     router = Router(id: id, pattern: mount)
@@ -63,15 +82,15 @@ open class Express: SettingsHolder, MountableMiddlewareObject, RouteKeeper,
   
   public func set(_ key: String, _ value: Any?) {
     if let v = value {
-      settings[key] = v
+      settingsStore[key] = v
     }
     else {
-      settings.removeValue(forKey: key)
+      settingsStore.removeValue(forKey: key)
     }
   }
   
   public func get(_ key: String) -> Any? {
-    return settings[key]
+    return settingsStore[key]
   }
   
   
@@ -132,6 +151,11 @@ open class Express: SettingsHolder, MountableMiddlewareObject, RouteKeeper,
   
   
   // MARK: - Description
+
+  /// The identifier used in the x-powered-by header
+  open var productIdentifier : String {
+    return "ExExpress"
+  }
   
   open var description : String {
     var ms = "<\(type(of: self)):"
@@ -160,8 +184,8 @@ open class Express: SettingsHolder, MountableMiddlewareObject, RouteKeeper,
       ms += engines.keys.joined(separator: ",")
     }
     
-    if !settings.isEmpty {
-      for ( key, value ) in settings {
+    if !settingsStore.isEmpty {
+      for ( key, value ) in settingsStore {
         ms += " '\(key)'='\(value)'"
       }
     }
