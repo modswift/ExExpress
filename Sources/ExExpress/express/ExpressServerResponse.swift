@@ -9,6 +9,12 @@
 public extension ServerResponse {
   // TODO: Would be cool: send(stream: GReadableStream), then stream.pipe(self)
   
+  public var app : Express? { return extra[ExpressExtKey.app] as? Express }
+  
+  public var request : IncomingMessage? {
+    return extra[ExpressExtKey.req] as? IncomingMessage
+  }
+  
   
   // MARK: - Status Handling
   

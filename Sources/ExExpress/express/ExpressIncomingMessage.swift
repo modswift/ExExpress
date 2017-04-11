@@ -8,9 +8,66 @@
 
 public extension IncomingMessage {
   
-  // TODO: baseUrl, originalUrl, path
+  // TODO: originalUrl, path
   // TODO: hostname, ip, ips, protocol
+
+  /// A reference to the active application. Updated when subapps are triggered.
+  public var app : Express? { return extra[ExpressExtKey.app] as? Express }
   
+  /**
+   * Contains the request parameters.
+   *
+   * Example:
+   *
+   *     app.use(/users/:id/view) { req, res, next in
+   *       guard let id = req.params[int: "id"]
+   *        else { return try res.sendStatus(400) }
+   *     }
+   */
+  public var params : [ String : String ] {
+    set {
+      extra[ExpressExtKey.params] = newValue
+    }
+    get {
+      // TODO: should be :Any
+      return (extra[ExpressExtKey.params] as? [ String : String ]) ?? [:]
+    }
+  }
+  
+  /**
+   * Contains the part of the URL which matched the current route. Example:
+   *
+   *     app.get("/admin/index") { ... }
+   *
+   * when this is invoked with "/admin/index/hello/world", the baseURL will
+   * be "/admin/index".
+   */
+  public var baseURL : String? {
+    set { extra[ExpressExtKey.baseURL] = newValue }
+    get { return extra[ExpressExtKey.baseURL] as? String }
+  }
+  
+  /// The active route.
+  public var route : Route? {
+    set { extra[ExpressExtKey.route] = newValue }
+    get { return extra[ExpressExtKey.route] as? Route }
+  }
+  
+  
+  /**
+   * Checks whether the Accept header of the client indicates that the client
+   * can deal with the given type, and returns the Accept pattern which matched
+   * the type.
+   *
+   * Example:
+   *
+   *     app.get("/index") { req, res, next in
+   *       if req.accepts("json") != nil {
+   *         try res.json(todos.getAll())
+   *       }
+   *       else { try res.send("Hello World!") }
+   *     }
+   */
   public func accepts(_ s: String) -> String? {
     // TODO: allow array values
     guard let acceptHeader = (self.getHeader("accept") as? String) else {

@@ -50,15 +50,15 @@ open class Express: SettingsHolder, MountableMiddlewareObject, RouteKeeper,
   {
     let oldApp = req.app
     let oldReq = res.request
-    req.extra[appKey] = self
-    res.extra[appKey] = self
-    res.extra[reqKey] = req
+    req.extra[ExpressExtKey.app] = self
+    res.extra[ExpressExtKey.app] = self
+    res.extra[ExpressExtKey.req] = req
     
     try router.handle(error: error, request: req, response: res) { _ in
       // this is only called if no object in the sub-application called 'next'!
-      req.extra[appKey] = oldApp
-      res.extra[appKey] = oldApp
-      res.extra[reqKey] = oldReq
+      req.extra[ExpressExtKey.app] = oldApp
+      res.extra[ExpressExtKey.app] = oldApp
+      res.extra[ExpressExtKey.req] = oldReq
       
       next() // continue
     }
@@ -67,9 +67,9 @@ open class Express: SettingsHolder, MountableMiddlewareObject, RouteKeeper,
   open func clearAttachedState(request  req : IncomingMessage,
                                response res : ServerResponse)
   { // break cycles
-    req.extra[appKey] = nil
-    res.extra[appKey] = nil
-    res.extra[reqKey] = nil
+    req.extra[ExpressExtKey.app] = nil
+    res.extra[ExpressExtKey.app] = nil
+    res.extra[ExpressExtKey.req] = nil
   }
   
   // MARK: - Route Keeper
@@ -196,10 +196,6 @@ open class Express: SettingsHolder, MountableMiddlewareObject, RouteKeeper,
 }
 
 
-private let appKey    = "io.noze.express.app"
-private let reqKey    = "io.noze.express.request"
-private let paramsKey = "io.noze.express.params"
-
 public typealias ExpressEngine = (
     _ path:    String,
     _ options: Any?,
@@ -207,32 +203,18 @@ public typealias ExpressEngine = (
   ) throws -> Void
 
 
-// MARK: - App access helper
 
-public extension IncomingMessage {
-  
-  public var app : Express? { return extra[appKey] as? Express }
-  
-  public var params : [ String : String ] {
-    set {
-      extra[paramsKey] = newValue
-    }
-    get {
-      // TODO: should be :Any
-      return (extra[paramsKey] as? [ String : String ]) ?? [:]
-    }
-  }
-  
+// keys for extra dictionary in IncomingRequest/ServerResponse
+
+enum ExpressExtKey {
+  static let app     = "io.noze.express.app"
+  static let req     = "io.noze.express.request"
+  static let params  = "io.noze.express.params"
+  static let locals  = "io.noze.express.locals"
+  static let route   = "io.noze.express.route"
+  static let baseURL = "io.noze.express.baseurl"
 }
-public extension ServerResponse {
-  
-  public var app : Express? { return extra[appKey] as? Express }
-  
-  public var request : IncomingMessage? {
-    return extra[reqKey] as? IncomingMessage
-  }
-  
-}
+
 
 public extension Dictionary where Key : ExpressibleByStringLiteral {
   public subscript(int key : Key) -> Int? {
