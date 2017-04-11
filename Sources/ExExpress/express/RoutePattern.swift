@@ -96,13 +96,13 @@ enum RoutePattern : CustomStringConvertible {
           pattern.append(.Contains(c[vIdx..<eIdx]))
         }
         else {
-          pattern.append(.Prefix(c[vIdx..<c.endIndex]))
+          pattern.append(.Suffix(c[vIdx..<c.endIndex]))
         }
         continue
       }
       if c.hasSuffix("*") {
         let eIdx = c.index(before: c.endIndex)
-        pattern.append(.Suffix(c[c.startIndex..<eIdx]))
+        pattern.append(.Prefix(c[c.startIndex..<eIdx]))
         continue
       }
 
