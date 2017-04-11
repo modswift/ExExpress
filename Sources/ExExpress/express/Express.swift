@@ -6,12 +6,31 @@
 //  Copyright © 2016 ZeeZide GmbH. All rights reserved.
 //
 
+/**
+ * The Express application object
+ *
+ * An instance of this object represents an Express application. An Express
+ * application is essentially as set of routes, configuration, and templates.
+ * Applications are 'mountable' and can be added to other applications.
+ *
+ * In ApacheExpress you need to use the `ApacheExpress` subclass as the main
+ * entry point, but you can still hook up other Express applications as
+ * subapplications (e.g. mount an admin frontend under the `/admin` path).
+ *
+ * To get access to the active application object, use the `app` property of
+ * either `IncomingMessage` or `ServerResponse`.
+ *
+ * TODO: examples
+ * TODO: document view engines
+ * TODO: SettingsHolder
+ * TODO: RouteKeeper
+ */
 open class Express: SettingsHolder, MountableMiddlewareObject, RouteKeeper,
                     CustomStringConvertible
 {
   
-  public let router   : Router
-  public var settings = [ String : Any ]()
+  public let router        : Router
+  public var settingsStore = [ String : Any ]()
   
   public init(id: String? = nil, mount: String? = nil) {
     router = Router(id: id, pattern: mount)
@@ -31,15 +50,15 @@ open class Express: SettingsHolder, MountableMiddlewareObject, RouteKeeper,
   {
     let oldApp = req.app
     let oldReq = res.request
-    req.extra[appKey] = self
-    res.extra[appKey] = self
-    res.extra[reqKey] = req
+    req.extra[ExpressExtKey.app] = self
+    res.extra[ExpressExtKey.app] = self
+    res.extra[ExpressExtKey.req] = req
     
     try router.handle(error: error, request: req, response: res) { _ in
       // this is only called if no object in the sub-application called 'next'!
-      req.extra[appKey] = oldApp
-      res.extra[appKey] = oldApp
-      res.extra[reqKey] = oldReq
+      req.extra[ExpressExtKey.app] = oldApp
+      res.extra[ExpressExtKey.app] = oldApp
+      res.extra[ExpressExtKey.req] = oldReq
       
       next() // continue
     }
@@ -48,9 +67,9 @@ open class Express: SettingsHolder, MountableMiddlewareObject, RouteKeeper,
   open func clearAttachedState(request  req : IncomingMessage,
                                response res : ServerResponse)
   { // break cycles
-    req.extra[appKey] = nil
-    res.extra[appKey] = nil
-    res.extra[reqKey] = nil
+    req.extra[ExpressExtKey.app] = nil
+    res.extra[ExpressExtKey.app] = nil
+    res.extra[ExpressExtKey.req] = nil
   }
   
   // MARK: - Route Keeper
@@ -63,15 +82,15 @@ open class Express: SettingsHolder, MountableMiddlewareObject, RouteKeeper,
   
   public func set(_ key: String, _ value: Any?) {
     if let v = value {
-      settings[key] = v
+      settingsStore[key] = v
     }
     else {
-      settings.removeValue(forKey: key)
+      settingsStore.removeValue(forKey: key)
     }
   }
   
   public func get(_ key: String) -> Any? {
-    return settings[key]
+    return settingsStore[key]
   }
   
   
@@ -132,6 +151,11 @@ open class Express: SettingsHolder, MountableMiddlewareObject, RouteKeeper,
   
   
   // MARK: - Description
+
+  /// The identifier used in the x-powered-by header
+  open var productIdentifier : String {
+    return "ExExpress"
+  }
   
   open var description : String {
     var ms = "<\(type(of: self)):"
@@ -160,8 +184,8 @@ open class Express: SettingsHolder, MountableMiddlewareObject, RouteKeeper,
       ms += engines.keys.joined(separator: ",")
     }
     
-    if !settings.isEmpty {
-      for ( key, value ) in settings {
+    if !settingsStore.isEmpty {
+      for ( key, value ) in settingsStore {
         ms += " '\(key)'='\(value)'"
       }
     }
@@ -172,10 +196,6 @@ open class Express: SettingsHolder, MountableMiddlewareObject, RouteKeeper,
 }
 
 
-private let appKey    = "io.noze.express.app"
-private let reqKey    = "io.noze.express.request"
-private let paramsKey = "io.noze.express.params"
-
 public typealias ExpressEngine = (
     _ path:    String,
     _ options: Any?,
@@ -183,32 +203,18 @@ public typealias ExpressEngine = (
   ) throws -> Void
 
 
-// MARK: - App access helper
 
-public extension IncomingMessage {
-  
-  public var app : Express? { return extra[appKey] as? Express }
-  
-  public var params : [ String : String ] {
-    set {
-      extra[paramsKey] = newValue
-    }
-    get {
-      // TODO: should be :Any
-      return (extra[paramsKey] as? [ String : String ]) ?? [:]
-    }
-  }
-  
+// keys for extra dictionary in IncomingRequest/ServerResponse
+
+enum ExpressExtKey {
+  static let app     = "io.noze.express.app"
+  static let req     = "io.noze.express.request"
+  static let params  = "io.noze.express.params"
+  static let locals  = "io.noze.express.locals"
+  static let route   = "io.noze.express.route"
+  static let baseURL = "io.noze.express.baseurl"
 }
-public extension ServerResponse {
-  
-  public var app : Express? { return extra[appKey] as? Express }
-  
-  public var request : IncomingMessage? {
-    return extra[reqKey] as? IncomingMessage
-  }
-  
-}
+
 
 public extension Dictionary where Key : ExpressibleByStringLiteral {
   public subscript(int key : Key) -> Int? {

@@ -440,24 +440,3 @@ fileprivate let workerQueue =
                   DispatchQueue(label:      "de.zeezide.apex3.sync-async",
                                 attributes: DispatchQueue.Attributes.concurrent)
 fileprivate let asyncTimeoutInMS = 1000
-
-
-
-// MARK: - Request Extension
-
-private let routeKey   = "io.noze.express.route"
-private let baseURLKey = "io.noze.express.baseurl"
-
-public extension IncomingMessage {
-  
-  public var baseURL : String? {
-    set { extra[baseURLKey] = newValue }
-    get { return extra[baseURLKey] as? String }
-  }
-  
-  public var route : Route? {
-    set { extra[routeKey] = newValue }
-    get { return extra[routeKey] as? Route }
-  }
-  
-}
