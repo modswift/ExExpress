@@ -6,6 +6,25 @@
 //  Copyright © 2016 ZeeZide GmbH. All rights reserved.
 //
 
+/**
+ * The Express application object
+ *
+ * An instance of this object represents an Express application. An Express
+ * application is essentially as set of routes, configuration, and templates.
+ * Applications are 'mountable' and can be added to other applications.
+ *
+ * In ApacheExpress you need to use the `ApacheExpress` subclass as the main
+ * entry point, but you can still hook up other Express applications as
+ * subapplications (e.g. mount an admin frontend under the `/admin` path).
+ *
+ * To get access to the active application object, use the `app` property of
+ * either `IncomingMessage` or `ServerResponse`.
+ *
+ * TODO: examples
+ * TODO: document view engines
+ * TODO: SettingsHolder
+ * TODO: RouteKeeper
+ */
 open class Express: SettingsHolder, MountableMiddlewareObject, RouteKeeper,
                     CustomStringConvertible
 {
