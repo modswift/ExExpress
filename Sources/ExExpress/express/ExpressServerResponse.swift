@@ -65,6 +65,46 @@ public extension ServerResponse {
   }
   
   
+  // MARK: - Redirects
+  
+  /**
+   * Sets the HTTP `Location` header. The location must be URL encoded already.
+   *
+   * If the given string is `back`, it will be replaced with the value of the
+   * `Referer` header, or `/` if there is none.
+   *
+   * If the string is empty or nil, the header will be removed.
+   */
+  public func location(_ location: String?) {
+    guard let location = location, !location.isEmpty else {
+      removeHeader("Location")
+      return
+    }
+    
+    if location == "back" {
+      if let referer = getHeader("Referer") as? String, !referer.isEmpty {
+        setHeader("Location", referer)
+      }
+      else {
+        setHeader("Location", "/")
+      }
+    }
+    else {
+      // TBD: make absolute based on Host?
+      // Also: make paths absolute (e.g. when given 'admin/new')
+      setHeader("Location", location)
+    }
+  }
+  
+  public func redirect(_ statusCode: Int, _ location: String) throws {
+    self.status(statusCode)
+    self.location(location)
+    try self.end()
+  }
+  public func redirect(_ location: String) throws {
+    try redirect(302, location) // work around swiftc confusion
+  }
+  
   // MARK: - Sending Content
  
   /**
