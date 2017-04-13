@@ -358,6 +358,7 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
   // MARK: - Matching
   
   private func split(urlPath s: String) -> [ String ] {
+    guard !s.isEmpty else { return [] }
     var url  = URL()
     url.path = s
     return url.escapedPathComponents!
