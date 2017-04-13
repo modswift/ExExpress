@@ -8,11 +8,35 @@
 
 public extension ServerResponse {
   // TODO: Would be cool: send(stream: GReadableStream), then stream.pipe(self)
+
   
+  /// A reference to the active application. Updated when subapps are triggered.
   public var app : Express? { return extra[ExpressExtKey.app] as? Express }
+
   
+  /// A reference to the request associated with this response.
   public var request : IncomingMessage? {
     return extra[ExpressExtKey.req] as? IncomingMessage
+  }
+  
+  /**
+   * The locals dictionary of the response. Use this to store response-scoped
+   * data. Be careful with key naming, so that you don't override the data
+   * of other middleware.
+   *
+   * Difference between `extra` and `locals`. Conceptually they are the same,
+   * but provide different namespaces. `extra` is used for framework internal
+   * stuff (and hence requires unique key, we recommend reverse DNS),
+   * while `locals` is open to the application and it is reasonable to use
+   * 'plain' keys (like "pageTitle", "results" etc).
+   */
+  public var locals : [ String : Any ] {
+    set {
+      extra[ExpressExtKey.locals] = newValue
+    }
+    get {
+      return extra[ExpressExtKey.locals] as? [ String : Any ] ?? [:]
+    }
   }
   
   
@@ -41,10 +65,57 @@ public extension ServerResponse {
   }
   
   
+  // MARK: - Redirects
+  
+  /**
+   * Sets the HTTP `Location` header. The location must be URL encoded already.
+   *
+   * If the given string is `back`, it will be replaced with the value of the
+   * `Referer` header, or `/` if there is none.
+   *
+   * If the string is empty or nil, the header will be removed.
+   */
+  public func location(_ location: String?) {
+    guard let location = location, !location.isEmpty else {
+      removeHeader("Location")
+      return
+    }
+    
+    if location == "back" {
+      if let referer = getHeader("Referer") as? String, !referer.isEmpty {
+        setHeader("Location", referer)
+      }
+      else {
+        setHeader("Location", "/")
+      }
+    }
+    else {
+      // TBD: make absolute based on Host?
+      // Also: make paths absolute (e.g. when given 'admin/new')
+      setHeader("Location", location)
+    }
+  }
+  
+  public func redirect(_ statusCode: Int, _ location: String) throws {
+    self.status(statusCode)
+    self.location(location)
+    try self.end()
+  }
+  public func redirect(_ location: String) throws {
+    try redirect(302, location) // work around swiftc confusion
+  }
+  
   // MARK: - Sending Content
  
+  /**
+   * Send given String as the response content to the client. If no
+   * content-type has been set, the String is checked whether it
+   * starts with <html. If so text/html is set as the content-type,
+   * text/plain otherwise.
+   */
   public func send(_ string: String) throws {
     if canAssignContentType {
+      // TODO: be more generic, maybe mod_magic?
       var ctype = string.hasPrefix("<html") ? "text/html" : "text/plain"
       ctype += "; charset=utf-8"
       setHeader("Content-Type", ctype)
@@ -53,8 +124,10 @@ public extension ServerResponse {
     try self.end(string)
   }
   
-  public func send(_ data: [UInt8]) throws {
-    if canAssignContentType {
+  /// Send the given Byte array to the client. Set type to
+  /// "application/octet-stream" if no other type has been set.
+  public func send(_ data: [ UInt8 ]) throws {
+    if canAssignContentType { // TBD: always true in Apache?
       setHeader("Content-Type", "application/octet-stream")
     }
     
@@ -64,6 +137,8 @@ public extension ServerResponse {
   public func send(_ object: JSON)          throws { try json(object) }
   public func send(_ object: JSONEncodable) throws { try json(object) }
   
+  /// Returns true if the content type has not been set yet and the headers have
+  /// not been send yet.
   var canAssignContentType : Bool {
     return !headersSent && getHeader("Content-Type") == nil
   }
@@ -93,9 +168,16 @@ public extension ServerResponse {
   
   // MARK: - Header Accessor Renames
   
+  /**
+   * Alias for getHeader, returns the value of an HTTP header.
+   */
   public func get(_ header: String) -> Any? {
     return getHeader(header)
   }
+  /**
+   * Alias for setHeader/removeHeader, sets or removes the value of an HTTP
+   * header.
+   */
   public func set(_ header: String, _ value: Any?) {
     if let v = value {
       setHeader(header, v)
