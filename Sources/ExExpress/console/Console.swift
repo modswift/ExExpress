@@ -188,8 +188,8 @@ class Console2<OutStreamType: GWritableStreamType,
     
     if logLevel.rawValue <= stderrLogLevel.rawValue {
       try! stderr.write(logLevel.logPrefixAsBytes)
-      try! stdout.write(Array(s.utf8)) // ouch
-      try! writeValues(to: stdout, values)
+      try! stderr.write(Array(s.utf8)) // ouch
+      try! writeValues(to: stderr, values)
       try! stderr.writev(buckets: eolBrigade, done: nil)
     }
     else {
