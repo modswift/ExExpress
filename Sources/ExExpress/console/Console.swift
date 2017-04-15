@@ -74,7 +74,7 @@ public extension ConsoleType { // Actual logging funcs
   }
 }
 
-class ConsoleBase : ConsoleType {
+public class ConsoleBase : ConsoleType {
 
   public var logLevel : LogLevel
   let stderrLogLevel  : LogLevel = .Error // directed to stderr, if available
@@ -121,7 +121,7 @@ func writeValues<T: GWritableStreamType>(to t: T, _ values : [ Any? ]) throws
 let eolBrigade   : [ [ UInt8 ] ] = [ [ 10 ] ]
 let spaceBrigade : [ [ UInt8 ] ] = [ [ 32 ] ] // best name evar
 
-class Console<OutStreamType: GWritableStreamType> : ConsoleBase
+public class Console<OutStreamType: GWritableStreamType> : ConsoleBase
                      where OutStreamType.WriteType == UInt8
 {
   
@@ -154,7 +154,7 @@ class Console<OutStreamType: GWritableStreamType> : ConsoleBase
 
 // Unfortunately we can't name this 'Console' as I hoped. Swift complains about
 // invalid redeclaration..
-class Console2<OutStreamType: GWritableStreamType,
+public class Console2<OutStreamType: GWritableStreamType,
                ErrStreamType: GWritableStreamType>
              : ConsoleBase
              where OutStreamType.WriteType == UInt8,
@@ -188,8 +188,8 @@ class Console2<OutStreamType: GWritableStreamType,
     
     if logLevel.rawValue <= stderrLogLevel.rawValue {
       try! stderr.write(logLevel.logPrefixAsBytes)
-      try! stdout.write(Array(s.utf8)) // ouch
-      try! writeValues(to: stdout, values)
+      try! stderr.write(Array(s.utf8)) // ouch
+      try! writeValues(to: stderr, values)
       try! stderr.writev(buckets: eolBrigade, done: nil)
     }
     else {
