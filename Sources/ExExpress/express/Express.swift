@@ -7,7 +7,7 @@
 //
 
 /**
- * The Express application object
+ * # The Express application object
  *
  * An instance of this object represents an Express application. An Express
  * application is essentially as set of routes, configuration, and templates.
@@ -20,16 +20,59 @@
  * To get access to the active application object, use the `app` property of
  * either `IncomingMessage` or `ServerResponse`.
  *
- * TODO: examples
- * TODO: document view engines
- * TODO: SettingsHolder
- * TODO: RouteKeeper
+ *
+ * ## Routes
+ *
+ * An Express object wraps a Router and has itself all the methods attached to
+ * a `RouteKeeper`. That is, you case use `get`, `post`, etc methods to setup
+ * routes of the application.
+ * Example:
+ *
+ *     let app = Express()
+ *     app.use("/index") {
+ *       req, res, _ in try res.render("index")
+ *     }
+ *
+ *
+ * ## Template Engines
+ *
+ * Express objects have a mapping of file extensions to 'template engines'. Own
+ * engines can be added by calling the `engine` function:
+ *
+ *     engine("mustache", mustacheExpress)
+ *
+ * The would call the `mustacheExpress` template engine when templates with the
+ * `.mustache` extensions need to be rendered.
+ *
+ *
+ * ## SettingsHolder
+ *
+ * TODO
+ *
+ *
+ * ## Mounted applications
+ *
+ * Express applications can be organized into 'sub applications' which can be
+ * mounted into parent applications.
+ *
+ * For example to mount an admin frontend into your main application, the code
+ * would look like:
+ *
+ *     let app = ApacheExpress.express(cmd, name: "mods_testapexdb")
+ *     app.use("/admin", AdminExpress.admin())
+ *
+ * Where `admin` returns another Express instance representing the admin
+ * application.
+ * The neat thing is that the routes used within the admin application are then
+ * relative to "/admin", e.g. "/admin/index" for a route targetting "/index".
  */
 open class Express: SettingsHolder, MountableMiddlewareObject, RouteKeeper,
                     CustomStringConvertible
 {
   
   public let router        : Router
+    // TBD: rather inherit? It used to be a struct, but not anmore.
+  
   public var settingsStore = [ String : Any ]()
   
   public init(id: String? = nil, mount: String? = nil) {
@@ -40,6 +83,7 @@ open class Express: SettingsHolder, MountableMiddlewareObject, RouteKeeper,
     engine("mustache", mustacheExpress)
     engine("html",     mustacheExpress)
   }
+  
   
   // MARK: - MiddlewareObject
   
@@ -72,11 +116,13 @@ open class Express: SettingsHolder, MountableMiddlewareObject, RouteKeeper,
     res.extra[ExpressExtKey.req] = nil
   }
   
+  
   // MARK: - Route Keeper
   
   open func add(route e: Route) {
     router.add(route: e)
   }
+  
   
   // MARK: - SettingsHolder
   

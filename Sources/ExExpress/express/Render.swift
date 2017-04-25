@@ -6,30 +6,60 @@
 //  Copyright © 2016 ZeeZide GmbH. All rights reserved.
 //
 
+public enum ExpressRenderingError: Error {
+  case NoApplicationActive
+  case UnsupportedViewEngine(String)
+}
+
 public extension ServerResponse {
   
+  /**
+   * Lookup a template with the given name, locate the rendering engine for it,
+   * and render it with the options that are passed in.
+   *
+   * Example:
+   *
+   *     app.get { _, res, _ in
+   *       try res.render('index', { "title": "Hello World!" })
+   *     }
+   *
+   * Assuming your 'views' directory contains an `index.mustache` file, this
+   * would trigger the Mustache engine to render the template with the given
+   * dictionary as input.
+   *
+   * When no options are passed in, render will fallback to the `view options`
+   * setting in the application (TODO: merge the two contexts).
+   */
   public func render(_ template: String, _ options : Any? = nil) throws {
-    let res = self
-    
     guard let app = self.app else {
-      console.error("No app object assigned to response: \(self)")
-      res.writeHead(500)
-      try res.end()
-      return
+      throw ExpressRenderingError.NoApplicationActive
     }
     
-    let viewEngine = (app.get("view engine") as? String) ?? "mustache"
-    guard let engine = app.engines[viewEngine] else {
-      console.error("Did not find view engine: \(viewEngine)")
-      res.writeHead(500)
-      try res.end()
-      return
+    try app.render(template: template, options: options, to: self)
+  }
+}
+
+public extension Express {
+  
+  /**
+   * Lookup a template with the given name, locate the rendering engine for it,
+   * and render it with the options that are passed in.
+   *
+   * Refer to the `ServerResponse.render` method for details.
+   */
+  public func render(template: String, options: Any?, to res: ServerResponse)
+                throws
+  {
+    let viewEngine = (get("view engine") as? String) ?? "mustache"
+    guard let engine = engines[viewEngine] else {
+      throw ExpressRenderingError.UnsupportedViewEngine(viewEngine)
     }
     
-    let viewsPath      = app.viewDirectory(for: viewEngine, response: self)
+    let viewsPath      = viewDirectory(for: viewEngine, response: res)
     let emptyOpts      : [ String : Any ] = [:]
-    let appViewOptions = app.get("view options") ?? emptyOpts
-    let viewOptions    = options ?? appViewOptions // TODO: merge if possible
+    let appViewOptions = get("view options") ?? emptyOpts
+    let viewOptions    = options ?? appViewOptions
+      // TODO: merge if possible (custom KVC wrapper ...)
     
     try lookupTemplate(views: viewsPath, template: template,
                        engine: viewEngine) {
