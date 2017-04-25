@@ -99,6 +99,8 @@ fileprivate class ExpressMustacheContext : MustacheDefaultRenderingContext {
 
 #if os(Linux)
   import func Glibc.dirname
+  import func Glibc.strdup
+  import func Glibc.free
 #else
   import func Darwin.dirname
 #endif
