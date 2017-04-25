@@ -35,3 +35,15 @@ clean :
 distclean : clean
 
 endif
+
+docker-build:
+	mkdir -p .docker.build .docker.Packages
+	docker run --rm \
+		-v $(PWD):/src \
+		-v $(PWD)/.docker.build:/src/.build	\
+		-v $(PWD)/.docker.Packages:/src/Packages\
+		swift:3.1 \
+		bash -c "cd /src && swift build"
+
+docker-clean:
+	rm -rf .build-docker
