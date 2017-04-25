@@ -242,10 +242,19 @@ open class Express: SettingsHolder, MountableMiddlewareObject, RouteKeeper,
 }
 
 
+/**
+ * Express rendering engine. A rendering engine is a function which gets a
+ * filesystem path and options. It is responsible for parsing the template at
+ * the path. And responsible for evaluating the template.
+ * When it is done, it calls the callback.
+ *
+ * The callback arguments are currently a potential error (or nil) and the
+ * result.
+ */
 public typealias ExpressEngine = (
-    _ path:    String,
-    _ options: Any?,
-    _ done:    @escaping ( Any?... ) throws -> Void
+    _ path:     String,
+    _ options:  Any?,
+    _ callback: ( Any?... ) throws -> Void
   ) throws -> Void
 
 

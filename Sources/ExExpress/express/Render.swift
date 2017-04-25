@@ -9,6 +9,7 @@
 public enum ExpressRenderingError: Error {
   case NoApplicationActive
   case UnsupportedViewEngine(String)
+  case TemplateError(Any)
 }
 
 public extension ServerResponse {
@@ -61,6 +62,10 @@ public extension Express {
     let viewOptions    = options ?? appViewOptions
       // TODO: merge if possible (custom KVC wrapper ...)
     
+    
+    // TODO: Add lookup cache? Maybe. Technically a single cache for the
+    //       view content would be cool, but the API is not really supporting
+    //       this.
     guard let path = lookupTemplatePath(template, in: viewsPath,
                                         preferredEngine: viewEngine)
      else {
@@ -76,10 +81,7 @@ public extension Express {
       let v1 = rc > 1 ? results[1] : nil
       
       if let error = v0 {
-        console.error("template error: \(error)")
-        res.writeHead(500)
-        try res.end()
-        return
+        throw ExpressRenderingError.TemplateError(error)
       }
       
       guard let result = v1 else {
@@ -90,8 +92,13 @@ public extension Express {
       }
 
       // TBD: maybe support a stream as a result? (result.pipe(res))
+      // Or generators, there are many more options.
+      if !(result is String) {
+        console.warn("template rendering result is not a String:", result)
+      }
+      
       let s = (result as? String) ?? "\(result)"
-
+      
       // Wow, this is harder than it looks when we want to consider a MIMEType
       // object as a value :-)
       var setContentType = true
