@@ -18,27 +18,33 @@ import mustache
  *
  * Checkout [mustache.github.io](http://mustache.github.io) for Mustache
  * documentation.
+ *
+ * Note: partials currently must live in the same directory like the parent.
  */
-let mustacheExpress : ExpressEngine = { path, options, done in
-  guard let template = fs.readFileSync(path, "utf8") else {
-    return try done(fs.Error.ReadError)
-  }
-  
-  let parser = MustacheParser()
-  let tree   = parser.parse(string: template)
-  
-  let ctx = ExpressMustacheContext(path: path, object: options)
-  
-  var renderError : Error? = nil
-  tree.render(inContext: ctx) { result in
-    do {
-      try done(nil, result)
+func mustacheExpress() -> ExpressEngine {
+  return { path, options, callback in
+    guard let template = fs.readFileSync(path, "utf8") else {
+      return try callback(fs.Error.ReadError)
     }
-    catch (let error) {
-      renderError = error
+    
+    let parser = MustacheParser()
+    let tree   = parser.parse(string: template)
+    
+    let ctx = ExpressMustacheContext(path: path, object: options)
+    
+    var renderError : Error? = nil
+    tree.render(inContext: ctx) { result in
+      do {
+        try callback(nil, result)
+      }
+      catch (let error) {
+        renderError = error
+      }
     }
+    
+    // TBD: why do we throw this?
+    if renderError != nil { throw renderError! }
   }
-  if renderError != nil { throw renderError! }
 }
 
 /**
@@ -81,6 +87,8 @@ fileprivate class ExpressMustacheContext : MustacheDefaultRenderingContext {
   
   func lookupPath(for name: String) -> String? {
     // TODO: proper fsname funcs
+    // TODO: it would be nice to recurse upwards, but we need a point where to
+    //       stop.
     return viewPath + "/" + name
   }
   

@@ -47,7 +47,7 @@
  *
  * ## SettingsHolder
  *
- * TODO
+ * TODO: document
  *
  *
  * ## Mounted applications
@@ -65,6 +65,7 @@
  * application.
  * The neat thing is that the routes used within the admin application are then
  * relative to "/admin", e.g. "/admin/index" for a route targetting "/index".
+ *
  */
 open class Express: SettingsHolder, MountableMiddlewareObject, RouteKeeper,
                     CustomStringConvertible
@@ -78,10 +79,12 @@ open class Express: SettingsHolder, MountableMiddlewareObject, RouteKeeper,
   public init(id: String? = nil, mount: String? = nil) {
     router = Router(id: id, pattern: mount)
     
+    let me = mustacheExpress()
+    engine("mustache", me)
+    engine("html",     me)
+    
     // defaults
     set("view engine", "mustache")
-    engine("mustache", mustacheExpress)
-    engine("html",     mustacheExpress)
   }
   
   
