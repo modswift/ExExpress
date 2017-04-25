@@ -38,7 +38,7 @@ endif
 
 docker-build:
 	mkdir -p .docker.build .docker.Packages
-	time docker run --rm \
+	docker run --rm \
 		-v $(PWD):/src \
 		-v $(PWD)/.docker.build:/src/.build	\
 		-v $(PWD)/.docker.Packages:/src/Packages\
