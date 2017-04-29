@@ -85,6 +85,10 @@ open class Express: SettingsHolder, MountableMiddlewareObject, RouteKeeper,
     
     // defaults
     set("view engine", "mustache")
+    
+    if let env = process.env["EXPRESS_ENV"], !env.isEmpty {
+      set("env", env)
+    }
   }
   
   
@@ -129,7 +133,7 @@ open class Express: SettingsHolder, MountableMiddlewareObject, RouteKeeper,
   
   // MARK: - SettingsHolder
   
-  public func set(_ key: String, _ value: Any?) {
+  open func set(_ key: String, _ value: Any?) {
     if let v = value {
       settingsStore[key] = v
     }
@@ -138,7 +142,8 @@ open class Express: SettingsHolder, MountableMiddlewareObject, RouteKeeper,
     }
   }
   
-  public func get(_ key: String) -> Any? {
+  open func get(_ key: String) -> Any? {
+    // TODO: inherit values from parent application?
     return settingsStore[key]
   }
   
