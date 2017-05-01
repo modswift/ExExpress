@@ -11,6 +11,8 @@
 		E81D11171E8EB91D0085B6E7 /* ExExRouteTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E81D11151E8EB7A30085B6E7 /* ExExRouteTests.swift */; };
 		E81D11191E8EB95E0085B6E7 /* TestSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = E81D11181E8EB95E0085B6E7 /* TestSupport.swift */; };
 		E85911881E8EC0D10061B209 /* RoutePattern.swift in Sources */ = {isa = PBXBuildFile; fileRef = E85911871E8EC0D10061B209 /* RoutePattern.swift */; };
+		E8773E101EB7EDFF00BB738D /* QueryStringTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8773E0E1EB7ED6D00BB738D /* QueryStringTests.swift */; };
+		E8773E121EB7F71A00BB738D /* QS.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8773E111EB7F71A00BB738D /* QS.swift */; };
 		E8AFFF5D1E6F19260074266E /* time.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8AFFF5A1E6F19260074266E /* time.swift */; };
 		E8AFFF5E1E6F19260074266E /* timespec.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8AFFF5B1E6F19260074266E /* timespec.swift */; };
 		E8AFFF5F1E6F19260074266E /* timeval_any.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8AFFF5C1E6F19260074266E /* timeval_any.swift */; };
@@ -80,6 +82,8 @@
 		E82359B51E49F311000B3120 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		E85911851E8EBD680061B209 /* libswiftSwiftOnoneSupport.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libswiftSwiftOnoneSupport.tbd; path = System/Library/PrivateFrameworks/Swift/libswiftSwiftOnoneSupport.tbd; sourceTree = SDKROOT; };
 		E85911871E8EC0D10061B209 /* RoutePattern.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RoutePattern.swift; path = Sources/ExExpress/express/RoutePattern.swift; sourceTree = SOURCE_ROOT; };
+		E8773E0E1EB7ED6D00BB738D /* QueryStringTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QueryStringTests.swift; sourceTree = "<group>"; };
+		E8773E111EB7F71A00BB738D /* QS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = QS.swift; path = Sources/ExExpress/express/QS.swift; sourceTree = SOURCE_ROOT; };
 		E8AFFF5A1E6F19260074266E /* time.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = time.swift; path = Sources/ExExpress/xsys/time.swift; sourceTree = SOURCE_ROOT; };
 		E8AFFF5B1E6F19260074266E /* timespec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = timespec.swift; path = Sources/ExExpress/xsys/timespec.swift; sourceTree = SOURCE_ROOT; };
 		E8AFFF5C1E6F19260074266E /* timeval_any.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = timeval_any.swift; path = Sources/ExExpress/xsys/timeval_any.swift; sourceTree = SOURCE_ROOT; };
@@ -169,6 +173,7 @@
 			isa = PBXGroup;
 			children = (
 				E81D11151E8EB7A30085B6E7 /* ExExRouteTests.swift */,
+				E8773E0E1EB7ED6D00BB738D /* QueryStringTests.swift */,
 			);
 			path = ExExpressTests;
 			sourceTree = "<group>";
@@ -270,6 +275,7 @@
 				E8AFFF951E6F199F0074266E /* Settings.swift */,
 				E8AFFF8D1E6F199F0074266E /* ExpressJSON.swift */,
 				E8AFFF8E1E6F199F0074266E /* ExpressMustache.swift */,
+				E8773E111EB7F71A00BB738D /* QS.swift */,
 			);
 			name = express;
 			path = Sources/express;
@@ -481,6 +487,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E81D11171E8EB91D0085B6E7 /* ExExRouteTests.swift in Sources */,
+				E8773E101EB7EDFF00BB738D /* QueryStringTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -525,6 +532,7 @@
 				E8AFFF831E6F19690074266E /* QueryString.swift in Sources */,
 				E8AFFF9C1E6F199F0074266E /* MiddlewareObject.swift in Sources */,
 				E8AFFF971E6F199F0074266E /* Express.swift in Sources */,
+				E8773E121EB7F71A00BB738D /* QS.swift in Sources */,
 				E8AFFFB61E6F1B6C0074266E /* CookieParser.swift in Sources */,
 				E8AFFF641E6F19300074266E /* FileOutputStream.swift in Sources */,
 				E8AFFF5F1E6F19260074266E /* timeval_any.swift in Sources */,
