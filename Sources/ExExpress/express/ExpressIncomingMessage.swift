@@ -37,6 +37,13 @@ public extension IncomingMessage {
   public var query : [ String : Any ] {
     if let q = extra[ExpressExtKey.query] as? [ String : Any ] { return q }
     
+    // this should be filled by Express when the request arrives. It depends on
+    // the 'query parser' setting:
+    // - false    => disable
+    // - simple   => querystring.parse
+    // - extended => qs.parse
+    // - custom   - custom parser function
+    
     // TODO: shoe[color]=blue gives shoe.color = blue
     // FIXME: cannot use url.parse due to overload
     guard let q = URL(url).query else {
