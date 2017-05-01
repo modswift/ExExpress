@@ -51,8 +51,8 @@ private func _parse(string s     : String,
     
     // check key and whether it contains Zope style formats
     
-    let keyPart = pairParts[0]
-    let fmtIdx  = keyPart.index(of: ":")
+    let keyPart = decodeURIComponent(String(pairParts[0]))
+    let fmtIdx  = keyPart.characters.index(of: ":")
     let key     : String
     let formats : String?
     
