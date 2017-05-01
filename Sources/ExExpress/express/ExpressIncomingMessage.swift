@@ -34,6 +34,13 @@ public extension IncomingMessage {
     }
   }
   
+  public var query : [ String : Any ] {
+    // TODO: shoe[color]=blue gives shoe.color = blue
+    // FIXME: cannot use url.parse due to overload
+    guard let q = URL(url).query else { return [:] }
+    return querystring.parse(q)
+  }
+  
   /**
    * Contains the part of the URL which matched the current route. Example:
    *
