@@ -39,8 +39,14 @@ public extension IncomingMessage {
     
     // TODO: shoe[color]=blue gives shoe.color = blue
     // FIXME: cannot use url.parse due to overload
-    guard let q = URL(url).query else { return [:] }
-    return querystring.parse(q)
+    guard let q = URL(url).query else {
+      extra[ExpressExtKey.query] = [:]
+      return [:]
+    }
+    
+    let qp = querystring.parse(q)
+    extra[ExpressExtKey.query] = qp
+    return qp
   }
   
   /**
