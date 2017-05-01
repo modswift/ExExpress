@@ -51,7 +51,7 @@ public extension IncomingMessage {
       return [:]
     }
     
-    let qp = querystring.parse(q)
+    let qp = qs.parse(q)
     extra[ExpressExtKey.query] = qp
     return qp
   }
