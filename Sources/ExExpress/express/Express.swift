@@ -276,6 +276,7 @@ enum ExpressExtKey {
   static let locals  = "io.noze.express.locals"
   static let route   = "io.noze.express.route"
   static let baseURL = "io.noze.express.baseurl"
+  static let query   = "io.noze.express.query"
 }
 
 

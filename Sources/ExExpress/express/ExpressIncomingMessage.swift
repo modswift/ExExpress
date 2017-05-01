@@ -35,6 +35,8 @@ public extension IncomingMessage {
   }
   
   public var query : [ String : Any ] {
+    if let q = extra[ExpressExtKey.query] as? [ String : Any ] { return q }
+    
     // TODO: shoe[color]=blue gives shoe.color = blue
     // FIXME: cannot use url.parse due to overload
     guard let q = URL(url).query else { return [:] }
