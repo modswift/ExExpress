@@ -177,60 +177,11 @@ public func parseZQPValue(string s: String, format: String) -> Any? {
   }
 }
 
+
+import Foundation
+
 /// %-unescape a string.
 private func _unescape(string: String) -> String {
-  // FIXME: crappy&slow implementation, do this better.
-  // Also: this should be based on bytes, not Strings
-  let s = string.characters
-  
-  guard s.index(of: "%") != nil || s.index(of: "+") != nil else {
-    return string
-  }
-  
-  var newString = [ UInt8 ]()
-  
-  func append(character c: Character) {
-    // yup, this is super-lame
-    newString.append(contentsOf: String(c).utf8)
-  }
-  
-  var idx = s.startIndex
-  while idx != s.endIndex {
-    let c0 = s[idx]
-
-    if c0 == "+" {
-      newString.append(32)
-      idx = s.index(after: idx)
-      continue
-    }
-    
-    if c0 != "%" {
-      append(character: c0)
-      idx = s.index(after: idx)
-      continue
-    }
-    
-    let idx1 = s.index(after: idx)
-    let idx2 = idx1 != s.endIndex ? s.index(after: idx1) : s.endIndex
-    if idx1 == s.endIndex || idx2 == s.endIndex {
-      append(character: c0)
-      idx = s.index(after: idx)
-      continue
-    }
-    
-    if let value = Int(String(s[idx1...idx2]), radix: 16) {
-      assert(value >= 0 && value < 256)
-      newString.append(UInt8(value))
-      idx = s.index(after: idx2)
-    }
-    else {
-      append(character: c0)
-      idx = s.index(after: idx)
-    }
-  }
-  
-  newString.append(0) // zero terminate
-  
-  return String(cString: newString)
+  return string.removingPercentEncoding ?? string
 }
 
