@@ -281,9 +281,28 @@ enum ExpressExtKey {
 
 
 public extension Dictionary where Key : ExpressibleByStringLiteral {
-  public subscript(int key : Key) -> Int? {
+  
+  public subscript(int key: Key) -> Int? {
     guard let v = self[key] else { return nil }
     if let i = (v as? Int) { return i }
     return Int("\(v)")
+  }
+  
+  public subscript(string key: Key) -> String? {
+    guard let v = self[key] else { return nil }
+    return v as? String ?? "\(v)"
+  }
+  
+  public subscript(bool key: Key) -> Bool {
+    guard let v = self[key] else { return false }
+    if let b = v as? Bool { return b }
+    if let i = v as? Int  { return i != 0 }
+    
+    // TODO: optionals
+    let s = (v as? String ?? "\(v)").lowercased()
+    switch s {
+      case "true", "yes", "1": return true
+      default: return false
+    }
   }
 }
