@@ -12,7 +12,7 @@ public enum qs {
   // TODO: this is a little funky because URL parsing really happens at a byte
   //       level (% decoding etc)
   
-  struct Options {
+  public class Options {
     let separator      : Character = "&"
     let pairSeparator  : Character = "="
     let depth          : Int       = 5
@@ -46,7 +46,137 @@ public enum qs {
 // 'a[]=b&a[]=c')            -> [ "a": [ "b", "c" ] ]
 // 'a[1]=b&a[3]=c'           -> [ "a": [ nil, "b", nil, "c" ] ]  (max: 20)
 // 'a.b=c' (allowsDot)       -> [ "a": [ "b": "c" ] ]
+// 'a[][b]=c'                -> [ "a": [ [ "b": "c" ] ] ]
 enum QueryParameterKeyPart {
   case Key(String) // hello or [hello]
   case Index(Int)  // [1]
+  case Array       // []
+  case Error(String)
+}
+
+extension qs {
+  
+  static func parseKeyPath(_ s: String, depth: Int = 5, allowsDot: Bool)
+              -> [ QueryParameterKeyPart ]
+  {
+    guard !s.isEmpty else { return [] }
+    
+    var idx      = s.startIndex
+    let endIndex = s.endIndex
+    
+    func consume(_ count: Int = 1) {
+      idx = s.index(idx, offsetBy: count)
+    }
+    func isDigit(_ c: Character) -> Bool {
+      switch c {
+        case "0", "1", "2", "3", "4", "5", "6", "7", "8", "9": return true
+        default: return false
+      }
+    }
+    
+    func parseIdentifier() -> String? {
+      guard idx < endIndex else { return nil }
+      
+      var hitDot = false
+      var lidx = idx
+      while lidx < endIndex {
+        if allowsDot && s[lidx] == "." {
+          hitDot = true
+          break
+        }
+        if s[lidx] == "[" {
+          break
+        }
+        
+        lidx = s.index(after: lidx)
+      }
+      
+      if hitDot {
+        let r = s[idx..<lidx]
+        idx = s.index(after: lidx)
+        return r
+      }
+      
+      let r = s[idx..<lidx]
+      idx = lidx
+      return r
+    }
+    
+    func parseNumber() -> Int? {
+      guard idx < endIndex else { return nil }
+      
+      var lidx = idx
+      while lidx < endIndex {
+        guard isDigit(s[lidx]) else { break }
+        lidx = s.index(after: lidx)
+      }
+      
+      let sv = s[idx..<lidx]
+      idx = lidx
+      
+      return Int(sv)
+    }
+    
+    func parseSubscript() -> QueryParameterKeyPart? {
+      guard idx < endIndex else { return nil }
+      guard s[idx] == "["  else { return nil }
+      
+      consume() // "["
+      guard idx < endIndex else { return .Error("lbrack not closed") }
+      
+      if s[idx] == "]" {
+        consume() // ]
+        return .Array
+      }
+      
+      if isDigit(s[idx]) {
+        guard let v = parseNumber()
+         else { return .Error("could not parse number") }
+        guard idx < endIndex, s[idx] == "]"
+         else { return .Error("lbrack not closed") }
+        
+        consume() // ]
+        return .Index(v)
+      }
+      
+      var lidx = idx
+      while lidx < endIndex {
+        if s[lidx] == "]" { break }
+        lidx = s.index(after: lidx)
+      }
+      guard lidx < endIndex, s[lidx] == "]"
+       else { return .Error("lbrack not closed") }
+      
+      let r = s[idx..<lidx]
+      idx = s.index(after: lidx)
+      
+      return .Key(r)
+    }
+    
+    func parseKeyPart() -> QueryParameterKeyPart? {
+      guard idx < endIndex else { return nil }
+      
+      if s[idx] == "[" {
+        return parseSubscript()
+      }
+      
+      guard let kid = parseIdentifier() else { return nil }
+      return .Key(kid)
+    }
+    
+    var parts = [ QueryParameterKeyPart ]()
+    while let part = parseKeyPart() {
+      parts.append(part)
+      
+      // check depth limit.
+      if parts.count > depth {
+        if idx < endIndex {
+          parts.append(.Key(s[idx..<endIndex]))
+        }
+        break
+      }
+    }
+    return parts
+  }
+  
 }
