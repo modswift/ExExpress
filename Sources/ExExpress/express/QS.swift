@@ -50,7 +50,6 @@ public enum qs {
                                  omittingEmptySubsequences: true)
       guard !pairParts.isEmpty else { continue }
     
-      print("PAIR: \(String(pair))")
       let key   = decodeURIComponent(String(pairParts[0]))
       let value = pairParts.count > 1
                   ? decodeURIComponent(String(pairParts[1])) : ""
