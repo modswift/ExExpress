@@ -182,6 +182,6 @@ import Foundation
 
 /// %-unescape a string.
 private func _unescape(string: String) -> String {
-  return string.removingPercentEncoding ?? string
+  return string.replacingOccurrences(of: "+", with: " ")
+               .removingPercentEncoding ?? string
 }
-
