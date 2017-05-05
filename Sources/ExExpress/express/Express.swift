@@ -85,6 +85,10 @@ open class Express: SettingsHolder, MountableMiddlewareObject, RouteKeeper,
     
     // defaults
     set("view engine", "mustache")
+    
+    if let env = process.env["EXPRESS_ENV"], !env.isEmpty {
+      set("env", env)
+    }
   }
   
   
@@ -129,7 +133,7 @@ open class Express: SettingsHolder, MountableMiddlewareObject, RouteKeeper,
   
   // MARK: - SettingsHolder
   
-  public func set(_ key: String, _ value: Any?) {
+  open func set(_ key: String, _ value: Any?) {
     if let v = value {
       settingsStore[key] = v
     }
@@ -138,7 +142,8 @@ open class Express: SettingsHolder, MountableMiddlewareObject, RouteKeeper,
     }
   }
   
-  public func get(_ key: String) -> Any? {
+  open func get(_ key: String) -> Any? {
+    // TODO: inherit values from parent application?
     return settingsStore[key]
   }
   
@@ -271,13 +276,33 @@ enum ExpressExtKey {
   static let locals  = "io.noze.express.locals"
   static let route   = "io.noze.express.route"
   static let baseURL = "io.noze.express.baseurl"
+  static let query   = "io.noze.express.query"
 }
 
 
 public extension Dictionary where Key : ExpressibleByStringLiteral {
-  public subscript(int key : Key) -> Int? {
+  
+  public subscript(int key: Key) -> Int? {
     guard let v = self[key] else { return nil }
     if let i = (v as? Int) { return i }
     return Int("\(v)")
+  }
+  
+  public subscript(string key: Key) -> String? {
+    guard let v = self[key] else { return nil }
+    return v as? String ?? "\(v)"
+  }
+  
+  public subscript(bool key: Key) -> Bool {
+    guard let v = self[key] else { return false }
+    if let b = v as? Bool { return b }
+    if let i = v as? Int  { return i != 0 }
+    
+    // TODO: optionals
+    let s = (v as? String ?? "\(v)").lowercased()
+    switch s {
+      case "true", "yes", "1": return true
+      default: return false
+    }
   }
 }

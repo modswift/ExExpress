@@ -173,13 +173,16 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
       }
     }
     
+    // TODO: perf
+    let reqPath   = url.parse(req.url).path ?? "/"
+    
     let params    : [ String : String ]
     let matchPath : String?
     if let pattern = urlPattern {
       var newParams = req.params // TBD
       
       if let base = req.baseURL {
-        let mountPath = req.url.substring(from: base.endIndex)
+        let mountPath = reqPath.substring(from: base.endIndex)
         let comps     = split(urlPath: mountPath)
 
         let mountMatchPath = RoutePattern.match(pattern   : pattern,
@@ -195,7 +198,7 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
         matchPath = base + match
       }
       else {
-        let comps = split(urlPath: req.url)
+        let comps = split(urlPath: reqPath)
         
         guard let mp = RoutePattern.match(pattern   : pattern,
                                           against   : comps,
