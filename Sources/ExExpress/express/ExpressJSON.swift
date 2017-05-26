@@ -35,8 +35,13 @@ public extension ServerResponse {
       if let jsonEncodable = (o as? JSONEncodable) {
         try json(jsonEncodable)
       }
+      else if let jsonEnum = (o as? JSON) {
+        try json(jsonEnum)
+      }
       else {
-        try json(String(0))
+        // TODO: really throw. Or send some error
+        console.error("cannot JSON encode object:", o)
+        try json(.null)
       }
     }
     else {
