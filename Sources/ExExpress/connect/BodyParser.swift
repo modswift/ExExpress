@@ -63,8 +63,38 @@ public extension BodyParserBody {
           if let s = v as? CustomStringConvertible { return s.description }
           return "\(v)"
         
-        // TODO: support JSON
+        case .JSON(let json):
+          switch json {
+            case .null:          return "<nil>" // TBD
+            case .string(let v): return v
+            case .double(let v): return String(v)
+            case .int   (let v): return String(v)
+            case .bool  (let v): return v ? "true" : "false"
+            default: return "\(json)" // TBD
+          }
+        
         default: return ""
+      }
+    }
+  }
+  public subscript(int key : String) -> Int? {
+    get {
+      switch self {
+        case .URLEncoded(let dict):
+          guard let v = dict[key] else { return nil }
+          if let s = v as? Int { return s }
+          return Int("\(v)")
+        
+        case .JSON(let json):
+          switch json {
+            case .null:          return nil
+            case .string(let v): return Int(v)
+            case .double(let v): return Int(v)
+            case .int   (let v): return v
+            case .bool  (let v): return v ? 1 : 0
+            default: return nil
+          }
+        default: return nil
       }
     }
   }
