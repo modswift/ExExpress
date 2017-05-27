@@ -54,7 +54,8 @@ public extension BodyParserBody {
       }
     }
   }
-  public subscript(string key : String) -> String {
+  
+  public subscript(string key : String) -> String { // TBD: Optional?
     get {
       switch self {
         case .URLEncoded(let dict):
@@ -64,19 +65,24 @@ public extension BodyParserBody {
           return "\(v)"
         
         case .JSON(let json):
-          switch json {
+          // TBD: index support for arrays?
+          guard case let .dictionary(dict) = json, let jsonValue = dict[key]
+           else { return "" }
+          
+          switch jsonValue {
             case .null:          return "<nil>" // TBD
             case .string(let v): return v
             case .double(let v): return String(v)
             case .int   (let v): return String(v)
             case .bool  (let v): return v ? "true" : "false"
-            default: return "\(json)" // TBD
+            default: return "\(jsonValue)" // TBD
           }
         
         default: return ""
       }
     }
   }
+  
   public subscript(int key : String) -> Int? {
     get {
       switch self {
@@ -86,7 +92,11 @@ public extension BodyParserBody {
           return Int("\(v)")
         
         case .JSON(let json):
-          switch json {
+          // TBD: index support for arrays?
+          guard case let .dictionary(dict) = json, let jsonValue = dict[key]
+           else { return nil }
+          
+          switch jsonValue {
             case .null:          return nil
             case .string(let v): return Int(v)
             case .double(let v): return Int(v)
