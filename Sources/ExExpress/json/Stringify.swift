@@ -14,15 +14,15 @@ public extension JSON {
   public static func stringify(_ object: Any?) -> Swift.String {
     guard let o = object else { return "null" }
     
-    if let json = object as? JSON {
+    if let json = o as? JSON {
       return json.toString()
     }
     
-    if let encodable = object as? JSONEncodable {
+    if let encodable = o as? JSONEncodable {
       return encodable.toJSON().toString()
     }
     
-    return JSON.string("\(o)").toString()
+    return JSON.string(String(describing: o)).toString()
   }
   
   public func toString() -> Swift.String {
