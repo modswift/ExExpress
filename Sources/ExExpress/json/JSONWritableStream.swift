@@ -114,17 +114,47 @@ public extension WritableByteStreamType {
 
 // MARK: - Need more JSONEncodable
 
+func otherValueToJSON(_ v: Any) -> JSON {
+  if let json      = v as? JSON          { return json }
+  if let jsonValue = v as? JSONEncodable { return jsonValue.toJSON() }
+  return String(describing: v).toJSON() // TBD: hm ...
+}
+
+extension Optional where Wrapped : JSONEncodable {
+  // this is not picked
+  // For this: you’ll need conditional conformance. Swift 4, hopefully
+
+  public func toJSON() -> JSON {
+    switch self {
+      case .none:            return .null
+      case .some(let value): return value.toJSON()
+    }
+    /*
+    if case .none = self { return .null }
+    guard let c = Wrapped.self as? DBDDecodableType.Type
+      else { return nil }
+    
+    guard let value = value else { return .null }
+    return value.toJSON()
+ */
+  }
+  
+}
+extension Optional: JSONEncodable {
+  
+  public func toJSON() -> JSON {
+    switch self {
+      case .none:        return .null
+      case .some(let v): return otherValueToJSON(v)
+    }
+  }
+  
+}
+
 extension Array: JSONEncodable {
   
   public func toJSON() -> JSON {
-    let arrayOfJSON : [ JSON ] = self.map { v in
-      if let jsonValue = (v as? JSONEncodable) {
-        return jsonValue.toJSON()
-      }
-      else { // hm, hm
-        return String(describing: v).toJSON()
-      }
-    }
+    let arrayOfJSON : [ JSON ] = self.map { v in otherValueToJSON(v) }
     return .array(arrayOfJSON)
   }
 }
@@ -136,13 +166,7 @@ extension Dictionary: JSONEncodable { // hh
     
     for (k, v) in self {
       let key = (k as? String) ?? String(describing: k)
-      
-      if let jsonValue = (v as? JSONEncodable) {
-        jsonDictionary[key] = jsonValue.toJSON()
-      }
-      else {
-        jsonDictionary[key] = String(describing: v).toJSON()
-      }
+      jsonDictionary[key] = otherValueToJSON(v)
     }
     
     return .dictionary(jsonDictionary)
