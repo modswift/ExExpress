@@ -10,6 +10,7 @@
 		E81D110D1E8EB70E0085B6E7 /* libExExpress.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E82359181E49F02C000B3120 /* libExExpress.dylib */; };
 		E81D11171E8EB91D0085B6E7 /* ExExRouteTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E81D11151E8EB7A30085B6E7 /* ExExRouteTests.swift */; };
 		E81D11191E8EB95E0085B6E7 /* TestSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = E81D11181E8EB95E0085B6E7 /* TestSupport.swift */; };
+		E848A3971EED85FC00593DEC /* mime_module.swift in Sources */ = {isa = PBXBuildFile; fileRef = E848A3961EED85FC00593DEC /* mime_module.swift */; };
 		E85911881E8EC0D10061B209 /* RoutePattern.swift in Sources */ = {isa = PBXBuildFile; fileRef = E85911871E8EC0D10061B209 /* RoutePattern.swift */; };
 		E8773E101EB7EDFF00BB738D /* QueryStringTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8773E0E1EB7ED6D00BB738D /* QueryStringTests.swift */; };
 		E8773E121EB7F71A00BB738D /* QS.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8773E111EB7F71A00BB738D /* QS.swift */; };
@@ -80,6 +81,7 @@
 		E81D11181E8EB95E0085B6E7 /* TestSupport.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TestSupport.swift; path = Sources/ExExpress/http/TestSupport.swift; sourceTree = SOURCE_ROOT; };
 		E82359181E49F02C000B3120 /* libExExpress.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libExExpress.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		E82359B51E49F311000B3120 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		E848A3961EED85FC00593DEC /* mime_module.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = mime_module.swift; path = Sources/ExExpress/mime/mime_module.swift; sourceTree = "<group>"; };
 		E85911851E8EBD680061B209 /* libswiftSwiftOnoneSupport.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libswiftSwiftOnoneSupport.tbd; path = System/Library/PrivateFrameworks/Swift/libswiftSwiftOnoneSupport.tbd; sourceTree = SDKROOT; };
 		E85911871E8EC0D10061B209 /* RoutePattern.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RoutePattern.swift; path = Sources/ExExpress/express/RoutePattern.swift; sourceTree = SOURCE_ROOT; };
 		E8773E0E1EB7ED6D00BB738D /* QueryStringTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QueryStringTests.swift; sourceTree = "<group>"; };
@@ -219,6 +221,7 @@
 				E823595E1E49F105000B3120 /* fs */,
 				E823594B1E49F105000B3120 /* console */,
 				E82359751E49F105000B3120 /* process */,
+				E848A3951EED85DE00593DEC /* mime */,
 				E823596C1E49F105000B3120 /* json */,
 				E82359611E49F105000B3120 /* http */,
 				E82359401E49F105000B3120 /* connect */,
@@ -359,6 +362,14 @@
 			);
 			name = xsys;
 			path = Sources/xsys;
+			sourceTree = "<group>";
+		};
+		E848A3951EED85DE00593DEC /* mime */ = {
+			isa = PBXGroup;
+			children = (
+				E848A3961EED85FC00593DEC /* mime_module.swift */,
+			);
+			name = mime;
 			sourceTree = "<group>";
 		};
 		E8AF387F1E4A06F000CBF4CB /* Middleware */ = {
@@ -505,6 +516,7 @@
 				E8AFFF6C1E6F194C0074266E /* console_module.swift in Sources */,
 				E8AFFF731E6F19580074266E /* JsonFile.swift in Sources */,
 				E8AFFF9F1E6F199F0074266E /* RouteKeeper.swift in Sources */,
+				E848A3971EED85FC00593DEC /* mime_module.swift in Sources */,
 				E8AFFFBA1E6F1B6C0074266E /* Pause.swift in Sources */,
 				E8AFFF5D1E6F19260074266E /* time.swift in Sources */,
 				E8AFFF961E6F199F0074266E /* express_module.swift in Sources */,
