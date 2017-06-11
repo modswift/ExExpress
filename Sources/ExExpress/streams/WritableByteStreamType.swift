@@ -6,8 +6,11 @@
 //  Copyright © 2017 ZeeZide GmbH. All rights reserved.
 //
 
+import struct Foundation.Data
+
 public protocol WritableByteStreamType : WritableStreamType {
   
+  // FIXME: may want to default to Data or better DispatchData
   func writev(buckets chunks: [ [ UInt8 ] ], done: DoneCB?) throws
   
 }
@@ -29,6 +32,11 @@ public extension WritableByteStreamType {
     try writev(buckets: [ bucket ], done: done)
   }
   
+  public func write(_ chunk: Data, done: DoneCB? = nil) throws {
+    let bucket = Array<UInt8>(chunk) // aargh
+    try writev(buckets: [ bucket ], done: done)
+  }
+  
   public func end(_ chunk: [ UInt8 ]? = nil, doneWriting: DoneCB? = nil) throws
   {
     if let chunk = chunk {
@@ -45,6 +53,13 @@ public extension WritableByteStreamType {
   
   public func end(_ chunk: String, doneWriting: DoneCB? = nil) throws {
     let bucket = Array<UInt8>(chunk.utf8) // aaargh
+    try writev(buckets: [ bucket ]) {
+      if let cb = doneWriting { try cb() }
+      try self.end()
+    }
+  }
+  public func end(_ chunk: Data, doneWriting: DoneCB? = nil) throws {
+    let bucket = Array<UInt8>(chunk) // aaargh
     try writev(buckets: [ bucket ]) {
       if let cb = doneWriting { try cb() }
       try self.end()
