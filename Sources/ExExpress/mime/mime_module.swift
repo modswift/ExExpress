@@ -13,6 +13,15 @@ import struct Foundation.URL
 
 public enum mime {
   
+  /**
+   * Returns a MIME type for the given extension or filesystem path.
+   *
+   * Examples:
+   *
+   *     mime.lookup("json")       => application/json; charset=UTF-8
+   *     mime.lookup("index.html") => text/html; charset=UTF-8
+   *
+   */
   public static func lookup(_ path: String) -> String? {
     if !path.contains(".") && !path.contains("/") {
       if let ctype = types[path] {
@@ -24,7 +33,9 @@ public enum mime {
     }
     
     let url = Foundation.URL(fileURLWithPath: path)
-    return types[url.pathExtension]
+    guard let ctype = types[url.pathExtension] else { return nil }
+    if let cs = defaultCharsets[ctype] { return ctype + "; charset=" + cs }
+    return ctype
   }
   
   public static func charset(_ ctype: String) -> String? {
