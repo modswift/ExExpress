@@ -117,7 +117,7 @@ public extension IncomingMessage {
    * Example:
    *
    *     app.use { req, res, next in
-   *       guard req.is("text/json") else { return next() }
+   *       guard req.is("application/json") else { return next() }
    *       // deal with JSON
    *     }
    */
