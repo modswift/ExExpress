@@ -247,7 +247,7 @@
 				E8AFFFBC1E6F1B780074266E /* TypeIs.swift */,
 			);
 			name = connect;
-			path = Sources/connect;
+			path = Sources/ExExpress/connect;
 			sourceTree = "<group>";
 		};
 		E823594B1E49F105000B3120 /* console */ = {
@@ -258,7 +258,7 @@
 				E8AFFF6B1E6F194C0074266E /* Console.swift */,
 			);
 			name = console;
-			path = Sources/console;
+			path = Sources/ExExpress/console;
 			sourceTree = "<group>";
 		};
 		E82359501E49F105000B3120 /* express */ = {
@@ -281,7 +281,7 @@
 				E8773E111EB7F71A00BB738D /* QS.swift */,
 			);
 			name = express;
-			path = Sources/express;
+			path = Sources/ExExpress/express;
 			sourceTree = "<group>";
 		};
 		E823595E1E49F105000B3120 /* fs */ = {
@@ -290,7 +290,7 @@
 				E8AFFF681E6F19420074266E /* fs_module.swift */,
 			);
 			name = fs;
-			path = Sources/fs;
+			path = Sources/ExExpress/fs;
 			sourceTree = "<group>";
 		};
 		E82359611E49F105000B3120 /* http */ = {
@@ -307,7 +307,7 @@
 				E81D11181E8EB95E0085B6E7 /* TestSupport.swift */,
 			);
 			name = http;
-			path = Sources/http;
+			path = Sources/ExExpress/http;
 			sourceTree = "<group>";
 		};
 		E823596C1E49F105000B3120 /* json */ = {
@@ -319,7 +319,7 @@
 				E8AFFF711E6F19580074266E /* Stringify.swift */,
 			);
 			name = json;
-			path = Sources/json;
+			path = Sources/ExExpress/json;
 			sourceTree = "<group>";
 		};
 		E82359721E49F105000B3120 /* leftpad */ = {
@@ -329,7 +329,7 @@
 				E8AFFF881E6F198E0074266E /* leftpad_module.swift */,
 			);
 			name = leftpad;
-			path = Sources/leftpad;
+			path = Sources/ExExpress/leftpad;
 			sourceTree = "<group>";
 		};
 		E82359751E49F105000B3120 /* process */ = {
@@ -338,7 +338,7 @@
 				E8AFFF861E6F19820074266E /* process_module.swift */,
 			);
 			name = process;
-			path = Sources/process;
+			path = Sources/ExExpress/process;
 			sourceTree = "<group>";
 		};
 		E82359771E49F105000B3120 /* streams */ = {
@@ -350,7 +350,7 @@
 				E8AFFF611E6F19300074266E /* GWritableStreamType.swift */,
 			);
 			name = streams;
-			path = Sources/streams;
+			path = Sources/ExExpress/streams;
 			sourceTree = "<group>";
 		};
 		E82359791E49F105000B3120 /* xsys */ = {
@@ -361,7 +361,7 @@
 				E8AFFF5C1E6F19260074266E /* timeval_any.swift */,
 			);
 			name = xsys;
-			path = Sources/xsys;
+			path = Sources/ExExpress/xsys;
 			sourceTree = "<group>";
 		};
 		E848A3951EED85DE00593DEC /* mime */ = {
