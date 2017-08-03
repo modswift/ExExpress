@@ -112,13 +112,76 @@ public extension WritableByteStreamType {
   
 }
 
+
 // MARK: - Need more JSONEncodable
+
+fileprivate var didWarn = false
 
 func otherValueToJSON(_ v: Any) -> JSON {
   if let json      = v as? JSON          { return json }
   if let jsonValue = v as? JSONEncodable { return jsonValue.toJSON() }
+  
+  if !didWarn {
+    console.warn("Encoding other value as JSON string:", v, type(of: v),
+                 "(warning only shown once!)")
+    didWarn = true
+  }
   return String(describing: v).toJSON() // TBD: hm ...
 }
+
+extension Int8 : JSONEncodable {
+  public func toJSON() -> JSON {
+    return .int(Int(self))
+  }
+}
+extension Int16 : JSONEncodable {
+  public func toJSON() -> JSON {
+    return .int(Int(self))
+  }
+}
+extension Int32 : JSONEncodable {
+  public func toJSON() -> JSON {
+    return .int(Int(self))
+  }
+}
+extension Int64 : JSONEncodable {
+  public func toJSON() -> JSON {
+    // TBD: this could break on 32 bitz?
+    if self > Int64(Int.max) {
+      console.log("JSONEncodable overflow, returning nil. Int64:", self)
+      return .null
+    }
+    return .int(Int(self))
+  }
+}
+
+extension UInt8 : JSONEncodable {
+  public func toJSON() -> JSON {
+    return .int(Int(self))
+  }
+}
+extension UInt16 : JSONEncodable {
+  public func toJSON() -> JSON {
+    return .int(Int(self))
+  }
+}
+extension UInt32 : JSONEncodable {
+  public func toJSON() -> JSON {
+    return .int(Int(self))
+  }
+}
+extension UInt64 : JSONEncodable {
+  public func toJSON() -> JSON {
+    // CAREFUL: This can overflow (not sure why JSONEncodable does not
+    //          support throwing ..)
+    if self > UInt64(Int.max) {
+      console.log("JSONEncodable overflow, returning nil. UInt64:", self)
+      return .null
+    }
+    return .int(Int(self))
+  }
+}
+
 
 extension Optional where Wrapped : JSONEncodable {
   // this is not picked
