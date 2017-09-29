@@ -133,6 +133,8 @@ public enum bodyParser {
     let inflate  = false
     let limit    = 100 * 1024
     let extended = true
+    
+    public init() {}
   }
   
   fileprivate static let requestKey = "io.noze.connect.body-parser.body"

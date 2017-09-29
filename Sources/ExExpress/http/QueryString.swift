@@ -17,9 +17,10 @@ public enum querystring {
   public static func parse(_ string      : String,
                            separator     : Character = "&",
                            pairSeparator : Character = "=",
-                        decodeURIComponent : (( String ) -> String) = _unescape)
+                   decodeURIComponent dd : (( String ) -> String)? = nil)
                      -> Dictionary<String, Any>
   {
+    let decodeURIComponent = dd ?? _unescape
     return _parse(string: string,
                   separator: separator, pairSeparator: pairSeparator,
                   decodeURIComponent: decodeURIComponent)

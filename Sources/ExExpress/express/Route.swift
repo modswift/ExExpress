@@ -182,7 +182,11 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
       var newParams = req.params // TBD
       
       if let base = req.baseURL {
-        let mountPath = reqPath.substring(from: base.endIndex)
+        #if swift(>=4.0)
+          let mountPath = String(reqPath[base.endIndex..<reqPath.endIndex])
+        #else
+          let mountPath = reqPath.substring(from: base.endIndex)
+        #endif
         let comps     = split(urlPath: mountPath)
 
         let mountMatchPath = RoutePattern.match(pattern   : pattern,
