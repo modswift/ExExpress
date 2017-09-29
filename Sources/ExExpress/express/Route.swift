@@ -280,7 +280,8 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
       nextArgs    = nil
       do {
         try middleware.handle(error: error,
-                              request: req, response: res, next: { args in
+                              request: req, response: res, next: {
+                                ( args: Any... ) in
                                 // in this sync implementation this is just a
                                 // fancy inout-return value ;-)
                                 didCallNext = true

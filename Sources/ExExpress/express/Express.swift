@@ -105,7 +105,8 @@ open class Express: SettingsHolder, MountableMiddlewareObject, RouteKeeper,
     res.extra[ExpressExtKey.app] = self
     res.extra[ExpressExtKey.req] = req
     
-    try router.handle(error: error, request: req, response: res) { _ in
+    try router.handle(error: error, request: req, response: res) {
+      ( args: Any... ) in
       // this is only called if no object in the sub-application called 'next'!
       req.extra[ExpressExtKey.app] = oldApp
       res.extra[ExpressExtKey.app] = oldApp
