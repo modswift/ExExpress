@@ -31,10 +31,11 @@ public enum qs {
                            parameterLimit : Int       = 1000,
                            arrayLimit     : Int       = 20,
                            allowsDot      : Bool      = false,
-                           decodeURIComponent :
-                                       (( String ) -> String) = _unescape)
+                           decodeURIComponent dd:
+                                       (( String ) -> String)? = nil)
                      -> Dictionary<String, Any>
   {
+    let decodeURIComponent = dd ?? _unescape
     if allowsDot { fatalError("allowsDot unsupported") }
 
     let parsedQV = RefStringAnyDictionary()
@@ -53,7 +54,7 @@ public enum qs {
       let key   = decodeURIComponent(String(pairParts[0]))
       let value = pairParts.count > 1
                   ? decodeURIComponent(String(pairParts[1])) : ""
-          
+      
       let kp = parseKeyPath(key, depth: depth, allowsDot: allowsDot)
       guard kp.count > 1 else {
         parsedQV[key] = value
@@ -235,7 +236,7 @@ public enum qs {
         default:
           assertionFailure("not implemented: non-dict part: \(lastPart)")
           break
-      }      
+      }
     }
     
     return parsedQV.flatten() as? Dictionary<String, Any> ?? [:]
@@ -373,12 +374,12 @@ extension qs {
       if hitDot {
         let r = s[idx..<lidx]
         idx = s.index(after: lidx)
-        return r
+        return String(r)
       }
       
       let r = s[idx..<lidx]
       idx = lidx
-      return r
+      return String(r)
     }
     
     func parseNumber() -> Int? {
@@ -429,7 +430,7 @@ extension qs {
       let r = s[idx..<lidx]
       idx = s.index(after: lidx)
       
-      return .Key(r)
+      return .Key(String(r))
     }
     
     func parseKeyPart() -> QueryParameterKeyPart? {
@@ -450,7 +451,7 @@ extension qs {
       // check depth limit.
       if parts.count > depth {
         if idx < endIndex {
-          parts.append(.Key(s[idx..<endIndex]))
+          parts.append(.Key(String(s[idx..<endIndex])))
         }
         break
       }
@@ -468,3 +469,4 @@ private func _unescape(string: String) -> String {
   return string.replacingOccurrences(of: "+", with: " ")
                .removingPercentEncoding ?? string
 }
+
