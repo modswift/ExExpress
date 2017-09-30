@@ -82,7 +82,7 @@ enum RoutePattern : CustomStringConvertible {
       
       if c.hasPrefix(":") {
         let vIdx = c.index(after: c.startIndex)
-        pattern.append(.Variable(c[vIdx..<c.endIndex]))
+        pattern.append(.Variable(String(c[vIdx..<c.endIndex])))
         continue
       }
       
@@ -93,16 +93,16 @@ enum RoutePattern : CustomStringConvertible {
         }
         else if c.hasSuffix("*") && c.characters.count > 1 {
           let eIdx = c.index(before: c.endIndex)
-          pattern.append(.Contains(c[vIdx..<eIdx]))
+          pattern.append(.Contains(String(c[vIdx..<eIdx])))
         }
         else {
-          pattern.append(.Suffix(c[vIdx..<c.endIndex]))
+          pattern.append(.Suffix(String(c[vIdx..<c.endIndex])))
         }
         continue
       }
       if c.hasSuffix("*") {
         let eIdx = c.index(before: c.endIndex)
-        pattern.append(.Prefix(c[c.startIndex..<eIdx]))
+        pattern.append(.Prefix(String(c[c.startIndex..<eIdx])))
         continue
       }
 

@@ -133,6 +133,8 @@ public enum bodyParser {
     let inflate  = false
     let limit    = 100 * 1024
     let extended = true
+    
+    public init() {}
   }
   
   fileprivate static let requestKey = "io.noze.connect.body-parser.body"
@@ -192,7 +194,7 @@ public extension bodyParser {
   public static func json(options opts: Options = Options()) -> Middleware {
     return { req, res, next in
       guard typeIs(req, [ "json" ]) != nil else { return next() }
-      guard case .NotParsed = req.body else { return next() }
+      guard case .NotParsed = req.body     else { return next() }
       
       // lame, should be streaming
       let bytes = try req.readBody()

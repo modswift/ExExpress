@@ -6,7 +6,7 @@
 //  Copyright © 2016 ZeeZide GmbH. All rights reserved.
 //
 
-fileprivate let sessionIdCookie = Cookie(name: "NzSID", maxAge: 3600)
+fileprivate let sessionIdCookie = Cookie(name: "ExSID", maxAge: 3600)
 
 fileprivate var sessionIdCounter = 0
 
@@ -19,15 +19,17 @@ fileprivate func nextSessionID(msg: IncomingMessage) -> String {
 }
 
 public func session(store s : SessionStore = InMemorySessionStore(),
-                    cookie  : Cookie       = sessionIdCookie,
-                    genid   : @escaping SessionIdGenerator = nextSessionID)
+                    cookie  : Cookie?      = nil,
+                    genid   : SessionIdGenerator? = nil)
             -> Middleware
 {
   return { req, res, next in
     // This is just a workaround for recursive funcs crashing the compiler.
     let ctx = SessionContext(request: req, response: res,
-                             store: s, templateCookie: cookie, genid: genid)
-    
+                             store          : s,
+                             templateCookie : cookie ?? sessionIdCookie,
+                             genid          : genid ?? nextSessionID)
+
     guard let sessionID = ctx.sessionID else {
       // no cookie with session-ID, register new
       ctx.configureNewSession()
@@ -226,8 +228,12 @@ public extension SessionStore {
 // FIXME: Apache: Need to make this thread-safe for Apache!
 public class InMemorySessionStore : SessionStore {
   
-  var store : [ String : Session ] = [:]
+  var store : [ String : Session ]
   
+  public init() {
+    store = [:]
+  }
+
   public func get(sessionID sid: String, _ cb: ( Session? ) throws -> Void )
                 throws
   {

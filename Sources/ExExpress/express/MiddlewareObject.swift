@@ -64,7 +64,9 @@ public extension MiddlewareObject {
       do {
         var errorToThrow : Error? = nil
         
-        try self.handle(error: nil, request: req, response: res) { _ in
+        try self.handle(error: nil, request: req, response: res) {
+          ( args: Any... ) in
+          
           do {
             // essentially the final handler
             

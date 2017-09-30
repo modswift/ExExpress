@@ -110,26 +110,18 @@ public extension IncomingMessage {
   /**
    * Check whether the Content-Type of the request matches the given `pattern`.
    *
-   * The current implementation just checks whether the request content-type
-   * contains the given pattern as a substring
-   * (FIXME: should support stuff like `image/ star `)
+   * Refer to the connect `typeIs` function for the actual matching
+   * implementation being used.
    *
    * Example:
    *
    *     app.use { req, res, next in
-   *       guard req.is("text/json") else { return next() }
+   *       guard req.is("application/json") else { return next() }
    *       // deal with JSON
    *     }
    */
   public func `is`(_ pattern: String) -> Bool {
-    // TODO: support text/* and such
-    guard let ctype = (self.getHeader("content-type") as? String) else {
-      return false
-    }
-    
-    // FIXME: naive and incorrect implementation :-)
-    // TODO: parse quality, patterns, etc etc
-    return ctype.lowercased().contains(pattern.lowercased())
+    return typeIs(self, [ pattern.lowercased() ]) != nil
   }
   
   /**

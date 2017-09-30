@@ -9,6 +9,7 @@
 // TODO: document, what are the varargs in Next?
 // - I think Express only supports an Error as the first argument (converting
 //   everything non-false into an Error)
+// See SR-6030 wrt varargs
 public typealias Next = (Any...) -> Void
 
 /// Supposed to call Next() when it is done.
@@ -98,7 +99,7 @@ public class Connect {
     
     var error : Error? = nil
     
-    let endNext : Next = { _ in
+    let endNext : Next = { ( args: Any... ) in
       // essentially the final handler
       response.writeHead(404)
       do {
@@ -111,11 +112,12 @@ public class Connect {
     
     guard !matchingMiddleware.isEmpty else { return endNext() }
     
-    var next : Next? = { _ in } // cannot be let as it's self-referencing
+    var next : Next? = { ( args: Any... ) in }
+                 // cannot be let as it's self-referencing
     
     var i = 0 // capture position in matching-middleware array (shared)
     next = {
-      args in
+      ( args: Any... ) in
       
       // grab next item from matching middleware array
       let middleware = matchingMiddleware[i].middleware

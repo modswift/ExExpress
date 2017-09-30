@@ -61,7 +61,12 @@ public extension ServerResponse {
     
     // TODO:
     // send(status.statusText)
-    try send("HTTP status \(code)")
+    if statusCode != 204 {
+      try send("HTTP status \(code)")
+    }
+    else {
+      try self.end()
+    }
   }
   
   

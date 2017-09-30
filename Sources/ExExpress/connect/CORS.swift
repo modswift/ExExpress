@@ -12,14 +12,14 @@ fileprivate let defaultMethods : [ String ] = [
 fileprivate let defaultHeaders = [ "Accept", "Content-Type" ]
 
 public func cors(allowOrigin  origin  : String,
-                 allowHeaders headers : [ String ] = defaultHeaders,
-                 allowMethods methods : [ String ] = defaultMethods,
-                 handleOptions: Bool = false)
+                 allowHeaders headers : [ String ]? = nil,
+                 allowMethods methods : [ String ]? = nil,
+                 handleOptions        : Bool = false)
             -> Middleware
 {
   return { req, res, next in
-    let sHeaders = headers.joined(separator: ", ")
-    let sMethods = methods.joined(separator: ",")
+    let sHeaders = (headers ?? defaultHeaders).joined(separator: ", ")
+    let sMethods = (methods ?? defaultMethods).joined(separator: ",")
     
     res.setHeader("Access-Control-Allow-Origin",  origin)
     res.setHeader("Access-Control-Allow-Headers", sHeaders)
