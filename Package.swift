@@ -23,3 +23,8 @@ let package = Package(
     "xcconfig"
   ]
 )
+
+#if swift(>=3.1)
+  package.swiftLanguageVersions = [ 3, 4 ]
+#endif
+
