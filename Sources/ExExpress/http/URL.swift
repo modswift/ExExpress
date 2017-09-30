@@ -289,7 +289,11 @@ extension String {
     var start = startIndex
     
     repeat {
-      let subString = self[start..<endIndex]
+      #if swift(>=4.0)
+        let subString = String(self[start..<endIndex])
+      #else // String(range) returns an optional on Swift 3?
+        let subString = self[start..<endIndex]
+      #endif
       if subString.hasPrefix(other) {
         return start
       }
