@@ -88,10 +88,15 @@ enum RoutePattern : CustomStringConvertible {
       
       if c.hasPrefix("*") {
         let vIdx = c.index(after: c.startIndex)
+        #if swift(>=3.2)
+          let cLen = c.count
+        #else
+          let cLen = c.characters.count
+        #endif
         if c == "**" {
           pattern.append(.Wildcard)
         }
-        else if c.hasSuffix("*") && c.characters.count > 1 {
+        else if c.hasSuffix("*") && cLen > 1 {
           let eIdx = c.index(before: c.endIndex)
           pattern.append(.Contains(String(c[vIdx..<eIdx])))
         }

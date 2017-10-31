@@ -386,9 +386,15 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
     let logPrefixPad = 20
     let id = self.id ?? ObjectIdentifier(self).debugDescription
     let p  = id
-    let ids = p.characters.count < logPrefixPad
-      ? p + String(repeating: " ", count: logPrefixPad - p.characters.count)
-      : p
+    #if swift(>=3.2)
+      let ids = p.count < logPrefixPad
+        ? p + String(repeating: " ", count: logPrefixPad - p.count)
+        : p
+    #else
+      let ids = p.characters.count < logPrefixPad
+        ? p + String(repeating: " ", count: logPrefixPad - p.characters.count)
+        : p
+    #endif
     return "[\(ids)]:"
   }()
   
