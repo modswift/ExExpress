@@ -161,7 +161,11 @@ private struct LogInfoProvider {
   static var urlPadLen = 28
   var paddedURL : String {
     let url       = req.url
-    let oldLength = url.characters.count
+    #if swift(>=3.2)
+      let oldLength = url.count
+    #else
+      let oldLength = url.characters.count
+    #endif
     if oldLength > LogInfoProvider.urlPadLen {
       LogInfoProvider.urlPadLen = oldLength + ( oldLength % 2)
     }

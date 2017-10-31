@@ -9,7 +9,11 @@
 public extension String {
   
   public func leftpad(_ length: Int, c: Character = " ") -> String {
-    let oldLength = self.characters.count
+    #if swift(>=3.2)
+      let oldLength = self.count
+    #else
+      let oldLength = self.characters.count
+    #endif
     guard oldLength < length else { return self }
     
     let prefix = c._repeat(times: (length - oldLength))

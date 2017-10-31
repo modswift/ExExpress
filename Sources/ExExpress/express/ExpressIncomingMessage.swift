@@ -99,7 +99,11 @@ public extension IncomingMessage {
     // FIXME: naive and incorrect implementation :-)
     // TODO: parse quality, patterns, etc etc
     let ls = s.lowercased()
-    let acceptedTypes = acceptHeader.characters.split(separator: ",")
+    #if swift(>=3.2)
+      let acceptedTypes = acceptHeader.split(separator: ",")
+    #else
+      let acceptedTypes = acceptHeader.characters.split(separator: ",")
+    #endif
     for mimeType in acceptedTypes {
       let mimeTypeString = String(mimeType)
       if mimeTypeString.lowercased().contains(ls) { return mimeTypeString }

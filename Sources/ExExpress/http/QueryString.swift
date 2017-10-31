@@ -42,8 +42,12 @@ private func _parse(string s     : String,
   
   var qp = Dictionary<String, Any>()
   
-  let pairs = s.characters.split(separator: separator,
-                                 omittingEmptySubsequences: true)
+  #if swift(>=3.2)
+    let pairs = s.split(separator: separator, omittingEmptySubsequences: true)
+  #else
+    let pairs = s.characters.split(separator: separator,
+                                   omittingEmptySubsequences: true)
+  #endif
   for pair in pairs {
     let pairParts = pair.split(separator: pairSeparator,
                                maxSplits: 1,
@@ -52,8 +56,12 @@ private func _parse(string s     : String,
     
     // check key and whether it contains Zope style formats
     
-    let keyPart = decodeURIComponent(String(pairParts[0]))
-    let fmtIdx  = keyPart.characters.index(of: ":")
+    let keyPart  = decodeURIComponent(String(pairParts[0]))
+    #if swift(>=3.2)
+      let fmtIdx = keyPart.index(of: ":")
+    #else
+      let fmtIdx = keyPart.characters.index(of: ":")
+    #endif
     let key     : String
     let formats : String?
     
@@ -154,10 +162,18 @@ public func parseZQPValue(string s: String, format: String) -> Any? {
     case "string":      return s
     
     case "text":
-      return String(s.characters.filter({$0 != "\r"}))
+      #if swift(>=3.2)
+        return String(s.filter({$0 != "\r"}))
+      #else
+        return String(s.characters.filter({$0 != "\r"}))
+      #endif
     
     case "lines":
-      let lines = s.characters.filter({$0 != "\r"}).split(separator: "\n")
+      #if swift(>=3.2)
+        let lines = s.filter({$0 != "\r"}).split(separator: "\n")
+      #else
+        let lines = s.characters.filter({$0 != "\r"}).split(separator: "\n")
+      #endif
       return lines.map { String($0) }
     
     case "boolean":

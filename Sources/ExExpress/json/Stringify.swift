@@ -36,7 +36,11 @@ public extension JSON {
 public extension String {
 
   public mutating func appendJSON(string s: String) {
-    let chars = s.characters
+    #if swift(>=3.2)
+      let chars = s
+    #else
+      let chars = s.characters
+    #endif
     reserveCapacity(chars.count + 2)
     
     self += "\""
