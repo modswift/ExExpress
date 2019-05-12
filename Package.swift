@@ -1,30 +1,34 @@
+// swift-tools-version:4.2
+//
+//  Package.swift
+//  ExExpress
+//
+//  Created by Helge Hess on 11.05.18.
+//  Copyright © 2019 ZeeZide. All rights reserved.
+//
 import PackageDescription
 
 let package = Package(
   name: "ExExpress",
 
+  products: [
+    .library(name: "ExExpress", targets: [ "ExExpress" ]),
+  ],
+  
   dependencies: [
-    .Package(url: "https://github.com/AlwaysRightInstitute/mustache.git",
-             majorVersion: 0, minor: 5),
+    .package(url: "https://github.com/AlwaysRightInstitute/mustache.git",
+             from: "0.5.9",
     
-    .Package(url: "https://github.com/modswift/Freddy.git",
-             majorVersion: 3, minor: 0)
-    /* 3.0.2 fails on Linux
-	  .Package(url: "https://github.com/bignerdranch/Freddy.git",
-						 majorVersion: 3, minor: 0),
-     */
+    .package(url: "https://github.com/modswift/Freddy.git",
+             from: "3.0.56")
   ],
 	
-  exclude: [
-    "ExExpress.xcodeproj",
-    "GNUmakefile",
-    "LICENSE",
-    "README.md",
-    "xcconfig"
+  targets: [
+    .target(name: "ExExpress", dependencies: [ "Apache", "Freddy" ])
   ]
 )
 
 #if swift(>=3.1)
-  package.swiftLanguageVersions = [ 3, 4 ]
+  package.swiftLanguageVersions = [ 3, 4, 5 ]
 #endif
 
