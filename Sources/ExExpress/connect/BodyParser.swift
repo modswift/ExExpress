@@ -3,7 +3,7 @@
 //  Noze.io
 //
 //  Created by Helge Hess on 30/05/16.
-//  Copyright © 2016 ZeeZide GmbH. All rights reserved.
+//  Copyright © 2016-2019 ZeeZide GmbH. All rights reserved.
 //
 
 public typealias BodyParserJSON = JSON
@@ -45,7 +45,7 @@ public enum BodyParserBody {
 
 public extension BodyParserBody {
   
-  public subscript(key : String) -> Any? {
+  subscript(key : String) -> Any? {
     get {
       switch self {
         case .URLEncoded(let dict): return dict[key]
@@ -55,7 +55,7 @@ public extension BodyParserBody {
     }
   }
   
-  public subscript(string key : String) -> String { // TBD: Optional?
+  subscript(string key : String) -> String { // TBD: Optional?
     get {
       switch self {
         case .URLEncoded(let dict):
@@ -83,7 +83,7 @@ public extension BodyParserBody {
     }
   }
   
-  public subscript(int key : String) -> Int? {
+  subscript(int key : String) -> Int? {
     get {
       switch self {
         case .URLEncoded(let dict):
@@ -152,7 +152,7 @@ public enum BodyParserError : Error {
 
 public extension IncomingMessage {
   
-  public var body : BodyParserBody {
+  var body : BodyParserBody {
     set {
       extra[bodyParser.requestKey] = newValue
     }
@@ -191,7 +191,7 @@ public extension bodyParser {
   ///       next()
   ///     }
   ///
-  public static func json(options opts: Options = Options()) -> Middleware {
+  static func json(options opts: Options = Options()) -> Middleware {
     return { req, res, next in
       guard typeIs(req, [ "json" ]) != nil else { return next() }
       guard case .NotParsed = req.body     else { return next() }
@@ -213,7 +213,7 @@ public extension bodyParser {
 
 public extension bodyParser {
 
-  public static func raw(options opts: Options = Options()) -> Middleware {
+  static func raw(options opts: Options = Options()) -> Middleware {
     return { req, res, next in
       guard case .NotParsed = req.body else { return next() }
       
@@ -224,7 +224,7 @@ public extension bodyParser {
     }
   }
   
-  public static func text(options opts: Options = Options()) -> Middleware {
+  static func text(options opts: Options = Options()) -> Middleware {
     return { req, res, next in
       // text/plain, text/html etc
       // TODO: properly process charset parameter, this assumes UTF-8
@@ -278,9 +278,7 @@ extension String {
 
 public extension bodyParser {
   
-  public static func urlencoded(options opts: Options = Options())
-                     -> Middleware
-  {
+  static func urlencoded(options opts: Options = Options()) -> Middleware {
     return { req, res, next in
       guard typeIs(req, [ "application/x-www-form-urlencoded" ]) != nil else {
         return next()

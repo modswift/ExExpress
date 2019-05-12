@@ -65,7 +65,7 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
           guard let error = error else { return next() }
           try mw(error, request, response, next)
         
-        case .asyncMiddleware(let mw):
+        case .asyncMiddleware: // (let mw):
           #if WITH_ASYNC_SUPPORT
             // FIXME: this is not the full solution, it only works if the
             //        middleware calls next, not if it doesn't. Not sure how
@@ -84,10 +84,10 @@ open class Route: MiddlewareObject, RouteKeeper, CustomStringConvertible {
               throw AsyncMiddlewareError.timeout
             }
           #else
-            fatalError("async middleware is not implemented yet: \(mw)")
+            fatalError("async middleware is not implemented yet")
           #endif
-        case .asyncErrorMiddleware(let mw):
-          fatalError("async middleware is not implemented yet: \(mw)")
+        case .asyncErrorMiddleware:
+          fatalError("async middleware is not implemented yet")
       }
     }
   }

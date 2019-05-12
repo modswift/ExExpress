@@ -3,7 +3,7 @@
 //  Noze.io
 //
 //  Created by Helge Heß on 6/2/16.
-//  Copyright © 2016 ZeeZide GmbH. All rights reserved.
+//  Copyright © 2016-2019 ZeeZide GmbH. All rights reserved.
 //
 
 public enum ExpressRenderingError: Error {
@@ -31,7 +31,7 @@ public extension ServerResponse {
    * When no options are passed in, render will fallback to the `view options`
    * setting in the application (TODO: merge the two contexts).
    */
-  public func render(_ template: String, _ options : Any? = nil) throws {
+  func render(_ template: String, _ options : Any? = nil) throws {
     guard let app = self.app else {
       throw ExpressRenderingError.NoApplicationActive
     }
@@ -48,9 +48,7 @@ public extension Express {
    *
    * Refer to the `ServerResponse.render` method for details.
    */
-  public func render(template: String, options: Any?, to res: ServerResponse)
-                throws
-  {
+  func render(template: String, options: Any?, to res: ServerResponse) throws {
     let viewEngine = (get("view engine") as? String) ?? "mustache"
     guard let engine = engines[viewEngine] else {
       throw ExpressRenderingError.UnsupportedViewEngine(viewEngine)

@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2017 ZeeZide GmbH, All Rights Reserved
+// Copyright (C) 2017-2019 ZeeZide GmbH, All Rights Reserved
 // Created by Helge Hess on 26/01/2017.
 //
 
@@ -107,19 +107,26 @@ public enum fs {
 public extension fs.stat_struct {
   
   // could be properties, but for consistency with Node ...
-  public func isFile()         -> Bool { return (st_mode & S_IFMT) == S_IFREG  }
-  public func isDirectory()    -> Bool { return (st_mode & S_IFMT) == S_IFDIR  }
-  public func isBlockDevice()  -> Bool { return (st_mode & S_IFMT) == S_IFBLK  }
-  public func isSymbolicLink() -> Bool { return (st_mode & S_IFMT) == S_IFLNK  }
-  public func isFIFO()         -> Bool { return (st_mode & S_IFMT) == S_IFIFO  }
-  public func isSocket()       -> Bool { return (st_mode & S_IFMT) == S_IFSOCK }
+  @inlinable
+  func isFile()         -> Bool { return (st_mode & S_IFMT) == S_IFREG  }
+  @inlinable
+  func isDirectory()    -> Bool { return (st_mode & S_IFMT) == S_IFDIR  }
+  @inlinable
+  func isBlockDevice()  -> Bool { return (st_mode & S_IFMT) == S_IFBLK  }
+  @inlinable
+  func isSymbolicLink() -> Bool { return (st_mode & S_IFMT) == S_IFLNK  }
+  @inlinable
+  func isFIFO()         -> Bool { return (st_mode & S_IFMT) == S_IFIFO  }
+  @inlinable
+  func isSocket()       -> Bool { return (st_mode & S_IFMT) == S_IFSOCK }
   
-  public func isCharacterDevice() -> Bool {
+  @inlinable
+  func isCharacterDevice() -> Bool {
     return (st_mode & S_IFMT) == S_IFCHR
   }
   
   
-  public var size : Int { return Int(st_size) }
+  var size : Int { return Int(st_size) }
   
   
   // TODO: we need a Date object, then we can do:
