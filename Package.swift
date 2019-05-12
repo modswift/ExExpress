@@ -17,18 +17,12 @@ let package = Package(
   
   dependencies: [
     .package(url: "https://github.com/AlwaysRightInstitute/mustache.git",
-             from: "0.5.9",
-    
+             from: "0.5.9"),
     .package(url: "https://github.com/modswift/Freddy.git",
-             from: "3.0.56")
+             from: "3.0.57")
   ],
 	
   targets: [
-    .target(name: "ExExpress", dependencies: [ "Apache", "Freddy" ])
+    .target(name: "ExExpress", dependencies: [ "mustache", "Freddy" ])
   ]
 )
-
-#if swift(>=3.1)
-  package.swiftLanguageVersions = [ 3, 4, 5 ]
-#endif
-
