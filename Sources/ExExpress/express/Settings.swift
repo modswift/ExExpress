@@ -3,7 +3,7 @@
 //  Noze.io
 //
 //  Created by Helge Hess on 02/06/16.
-//  Copyright © 2016 ZeeZide GmbH. All rights reserved.
+//  Copyright © 2016-2019 ZeeZide GmbH. All rights reserved.
 //
 
 public protocol SettingsHolder {
@@ -15,14 +15,14 @@ public protocol SettingsHolder {
 
 public extension SettingsHolder {
   
-  public func enable(_ key: String) {
+  func enable(_ key: String) {
     set(key, true)
   }
-  public func disable(_ key: String) {
+  func disable(_ key: String) {
     set(key, false)
   }
   
-  public subscript(setting key : String) -> Any? {
+  subscript(setting key : String) -> Any? {
     get { return get(key)    }
     set { set(key, newValue) }
   }
@@ -30,7 +30,7 @@ public extension SettingsHolder {
   
   // MARK: - Trampoline
   
-  public var settings : ExpressSettings { return ExpressSettings(holder: self) }
+  var settings : ExpressSettings { return ExpressSettings(holder: self) }
 }
 
 public struct ExpressSettings {

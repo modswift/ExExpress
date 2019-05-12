@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2017 ZeeZide GmbH, All Rights Reserved
+// Copyright (C) 2017-2019 ZeeZide GmbH, All Rights Reserved
 // Created by Helge Hess on 26/01/2017.
 //
 
@@ -17,7 +17,7 @@ public protocol IncomingMessage : HttpMessageBaseType {
 
 public extension IncomingMessage {
 
-  public func readBody(bufsize: Int) throws -> [ UInt8 ] {
+  func readBody(bufsize: Int) throws -> [ UInt8 ] {
     var bytes = [ UInt8 ]()
           // TODO: If there is a content-length, reserve capacity
     

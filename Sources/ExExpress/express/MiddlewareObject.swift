@@ -3,7 +3,7 @@
 //  Noze.io
 //
 //  Created by Helge Hess on 02/06/16.
-//  Copyright © 2016 ZeeZide GmbH. All rights reserved.
+//  Copyright © 2016-2019 ZeeZide GmbH. All rights reserved.
 //
 
 /**
@@ -51,13 +51,13 @@ fileprivate let allowedDefaultMethods = [
 
 public extension MiddlewareObject {
   
-  public var middleware: Middleware {
+  var middleware: Middleware {
     return { req, res, next in
       try self.handle(error: nil, request: req, response: res, next: next)
     }
   }
 
-  public var requestHandler: RequestEventCB {
+  var requestHandler: RequestEventCB {
     return { req, res in
       var errorToThrow : Error? = nil
       

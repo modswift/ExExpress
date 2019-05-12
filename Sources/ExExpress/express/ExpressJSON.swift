@@ -3,7 +3,7 @@
 //  Noze.io
 //
 //  Created by Helge Heß on 6/3/16.
-//  Copyright © 2016 ZeeZide GmbH. All rights reserved.
+//  Copyright © 2016-2019 ZeeZide GmbH. All rights reserved.
 //
 
 public extension ServerResponse {
@@ -12,7 +12,7 @@ public extension ServerResponse {
   // TODO: Maybe we don't want to convert to a `JSON`, but rather stream real
   //       object.
   
-  public func json(_ object: JSON) throws {
+  func json(_ object: JSON) throws {
     if canAssignContentType {
       setHeader("Content-Type", "application/json; charset=utf-8")
     }
@@ -26,11 +26,11 @@ public extension ServerResponse {
 
 public extension ServerResponse {
 
-  public func json(_ object: JSONEncodable) throws {
+  func json(_ object: JSONEncodable) throws {
     try json(object.toJSON())
   }
   
-  public func json(_ object: Any?) throws {
+  func json(_ object: Any?) throws {
     if let o = object {
       if let jsonEncodable = (o as? JSONEncodable) {
         try json(jsonEncodable)

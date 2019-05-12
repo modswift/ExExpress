@@ -3,7 +3,7 @@
 //  ExExpress
 //
 //  Created by Helge Hess on 07/02/17.
-//  Copyright © 2017 ZeeZide GmbH. All rights reserved.
+//  Copyright © 2017-2019 ZeeZide GmbH. All rights reserved.
 //
 
 public protocol GWritableStreamType : class, WritableStreamType {
@@ -18,13 +18,11 @@ public protocol GWritableStreamType : class, WritableStreamType {
 
 public extension GWritableStreamType {
   
-  public func write(_ chunk: [ WriteType ], done: DoneCB? = nil) throws {
+  func write(_ chunk: [ WriteType ], done: DoneCB? = nil) throws {
     try writev(buckets: [ chunk ], done: done )
   }
   
-  public func end(_ chunk: [ WriteType ]? = nil, doneWriting: DoneCB? = nil)
-              throws
-  {
+  func end(_ chunk: [ WriteType ]? = nil, doneWriting: DoneCB? = nil) throws {
     if let chunk = chunk {
       try writev(buckets: [ chunk ]) {
         if let cb = doneWriting { try cb() }

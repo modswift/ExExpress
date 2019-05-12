@@ -3,7 +3,7 @@
 //  Noze.io
 //
 //  Created by Helge Heß on 5/17/16.
-//  Copyright © 2016 ZeeZide GmbH. All rights reserved.
+//  Copyright © 2016-2019 ZeeZide GmbH. All rights reserved.
 //
 
 import Foundation // for String.hasPrefix/hasSuffix
@@ -57,7 +57,9 @@ private func _parse(string s     : String,
     // check key and whether it contains Zope style formats
     
     let keyPart  = decodeURIComponent(String(pairParts[0]))
-    #if swift(>=3.2)
+    #if swift(>=4.2)
+      let fmtIdx = keyPart.firstIndex(of: ":")
+    #elseif swift(>=3.2)
       let fmtIdx = keyPart.index(of: ":")
     #else
       let fmtIdx = keyPart.characters.index(of: ":")

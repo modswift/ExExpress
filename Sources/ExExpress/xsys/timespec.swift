@@ -3,7 +3,7 @@
 //  Noze.io
 //
 //  Created by Helge Hess on 31/05/16.
-//  Copyright © 2016 ZeeZide GmbH. All rights reserved.
+//  Copyright © 2016-2019 ZeeZide GmbH. All rights reserved.
 //
 
 #if os(Linux)
@@ -30,12 +30,15 @@ public typealias timeval  = Darwin.timeval
 
 public extension timespec {
   
-  public init(_ mts: mach_timespec_t) {
+  init(_ mts: mach_timespec_t) {
+    #if swift(>=4.2)
+      self.init()
+    #endif
     tv_sec  = __darwin_time_t(mts.tv_sec)
     tv_nsec = Int(mts.tv_nsec)
   }
   
-  public static func monotonic() -> timespec {
+  static func monotonic() -> timespec {
     var cclock = clock_serv_t()
     var mts    = mach_timespec_t()
     

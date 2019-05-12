@@ -3,7 +3,7 @@
 //  Noze.io
 //
 //  Created by Helge Heß on 6/2/16.
-//  Copyright © 2016 ZeeZide GmbH. All rights reserved.
+//  Copyright © 2016-2019 ZeeZide GmbH. All rights reserved.
 //
 
 public extension IncomingMessage {
@@ -12,7 +12,7 @@ public extension IncomingMessage {
   // TODO: hostname, ip, ips, protocol
 
   /// A reference to the active application. Updated when subapps are triggered.
-  public var app : Express? { return extra[ExpressExtKey.app] as? Express }
+  var app : Express? { return extra[ExpressExtKey.app] as? Express }
   
   /**
    * Contains the request parameters.
@@ -24,7 +24,7 @@ public extension IncomingMessage {
    *        else { return try res.sendStatus(400) }
    *     }
    */
-  public var params : [ String : String ] {
+  var params : [ String : String ] {
     set {
       extra[ExpressExtKey.params] = newValue
     }
@@ -34,7 +34,7 @@ public extension IncomingMessage {
     }
   }
   
-  public var query : [ String : Any ] {
+  var query : [ String : Any ] {
     if let q = extra[ExpressExtKey.query] as? [ String : Any ] { return q }
     
     // this should be filled by Express when the request arrives. It depends on
@@ -64,13 +64,13 @@ public extension IncomingMessage {
    * when this is invoked with "/admin/index/hello/world", the baseURL will
    * be "/admin/index".
    */
-  public var baseURL : String? {
+  var baseURL : String? {
     set { extra[ExpressExtKey.baseURL] = newValue }
     get { return extra[ExpressExtKey.baseURL] as? String }
   }
   
   /// The active route.
-  public var route : Route? {
+  var route : Route? {
     set { extra[ExpressExtKey.route] = newValue }
     get { return extra[ExpressExtKey.route] as? Route }
   }
@@ -90,7 +90,7 @@ public extension IncomingMessage {
    *       else { try res.send("Hello World!") }
    *     }
    */
-  public func accepts(_ s: String) -> String? {
+  func accepts(_ s: String) -> String? {
     // TODO: allow array values
     guard let acceptHeader = (self.getHeader("accept") as? String) else {
       return nil
@@ -124,7 +124,7 @@ public extension IncomingMessage {
    *       // deal with JSON
    *     }
    */
-  public func `is`(_ pattern: String) -> Bool {
+  func `is`(_ pattern: String) -> Bool {
     return typeIs(self, [ pattern.lowercased() ]) != nil
   }
   
@@ -132,7 +132,7 @@ public extension IncomingMessage {
    * This is true if the request was triggered by an `XMLHtttpRequest`
    * (checks the `X-Requested-With` header).
    */
-  public var xhr : Bool {
+  var xhr : Bool {
     guard let h = (getHeader("X-Requested-With") as? String) else {
       return false
     }

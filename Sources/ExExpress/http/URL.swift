@@ -3,7 +3,7 @@
 //  SwiftyHTTP
 //
 //  Created by Helge Hess on 7/4/14.
-//  Copyright (c) 2014 Always Right Institute. All rights reserved.
+//  Copyright (c) 2014-2019 Always Right Institute. All rights reserved.
 //
 
 public enum url {
@@ -120,7 +120,7 @@ public struct URL {
 
 public extension URL { // String representation
   
-  public func toString() -> String? {
+  func toString() -> String? {
     var us = ""
     
     var scheme = self.scheme
@@ -169,7 +169,7 @@ public extension URL { // String representation
 
 public extension String {
   
-  public var withoutPercentEscapes : String { return percentUnescape(string: self) }
+  var withoutPercentEscapes : String { return percentUnescape(string: self) }
   
 }
 
@@ -217,7 +217,7 @@ public extension URL {
 
 public extension URL { // /etc/services
   
-  public static func scheme(forPort port: Int) -> String? {
+  static func scheme(forPort port: Int) -> String? {
     // read /etc/services? but this doesn't have a proper 1337?
     switch port {
       case    7: return "echo"
@@ -233,7 +233,7 @@ public extension URL { // /etc/services
     }
   }
   
-  public static func port(forScheme scheme: String) -> Int? {
+  static func port(forScheme scheme: String) -> Int? {
     // read /etc/services? but this doesn't have a proper 1337?
     switch scheme {
       case "echo":   return 7;
@@ -312,7 +312,9 @@ extension String {
 }
 
 private func index(string: String, c: Character) -> String.Index? {
-  #if swift(>=3.2)
+  #if swift(>=4.2)
+    return string.firstIndex(of: c)
+  #elseif swift(>=3.2)
     return string.index(of: c)
   #else
     return string.characters.index(of: c)

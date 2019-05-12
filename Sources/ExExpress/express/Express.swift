@@ -3,7 +3,7 @@
 //  Noze.io
 //
 //  Created by Helge Heß on 6/2/16.
-//  Copyright © 2016 ZeeZide GmbH. All rights reserved.
+//  Copyright © 2016-2019 ZeeZide GmbH. All rights reserved.
 //
 
 /**
@@ -283,18 +283,18 @@ enum ExpressExtKey {
 
 public extension Dictionary where Key : ExpressibleByStringLiteral {
   
-  public subscript(int key: Key) -> Int? {
+  subscript(int key: Key) -> Int? {
     guard let v = self[key] else { return nil }
     if let i = (v as? Int) { return i }
     return Int("\(v)")
   }
   
-  public subscript(string key: Key) -> String? {
+  subscript(string key: Key) -> String? {
     guard let v = self[key] else { return nil }
     return v as? String ?? "\(v)"
   }
   
-  public subscript(bool key: Key) -> Bool {
+  subscript(bool key: Key) -> Bool {
     guard let v = self[key] else { return false }
     if let b = v as? Bool { return b }
     if let i = v as? Int  { return i != 0 }

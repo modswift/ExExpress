@@ -3,12 +3,12 @@
 //  Noze.io
 //
 //  Created by Helge Hess on 11/04/16.
-//  Copyright © 2016 ZeeZide GmbH. All rights reserved.
+//  Copyright © 2016-2019 ZeeZide GmbH. All rights reserved.
 //
 
 public extension String {
   
-  public func leftpad(_ length: Int, c: Character = " ") -> String {
+  func leftpad(_ length: Int, c: Character = " ") -> String {
     #if swift(>=3.2)
       let oldLength = self.count
     #else

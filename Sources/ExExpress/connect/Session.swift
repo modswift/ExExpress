@@ -3,7 +3,7 @@
 //  Noze.io
 //
 //  Created by Helge Heß on 6/16/16.
-//  Copyright © 2016 ZeeZide GmbH. All rights reserved.
+//  Copyright © 2016-2019 ZeeZide GmbH. All rights reserved.
 //
 
 fileprivate let sessionIdCookie = Cookie(name: "ExSID", maxAge: 3600)
@@ -169,7 +169,7 @@ public extension IncomingMessage {
     return newSession
   }
   
-  public var session : Session {
+  var session : Session {
     guard let rawSN = extra[requestKey] else { return registerNewSession() }
     
     guard let session = rawSN as? Session else {

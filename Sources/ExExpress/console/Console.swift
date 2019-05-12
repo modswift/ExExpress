@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2017 ZeeZide GmbH, All Rights Reserved
+// Copyright (C) 2017-2019 ZeeZide GmbH, All Rights Reserved
 // Created by Helge Hess on 26/01/2017.
 //
 
@@ -47,23 +47,28 @@ public protocol ConsoleType {
 
 public extension ConsoleType { // Actual logging funcs
   
-  public func error(_ msg: @autoclosure () -> String, _ values: Any?...) {
+  @inlinable
+  func error(_ msg: @autoclosure () -> String, _ values: Any?...) {
     primaryLog(.Error, msg, values)
   }
-  public func warn (_ msg: @autoclosure () -> String, _ values: Any?...) {
+  @inlinable
+  func warn (_ msg: @autoclosure () -> String, _ values: Any?...) {
     primaryLog(.Warn, msg, values)
   }
-  public func log  (_ msg: @autoclosure () -> String, _ values: Any?...) {
+  @inlinable
+  func log  (_ msg: @autoclosure () -> String, _ values: Any?...) {
     primaryLog(.Log, msg, values)
   }
-  public func info (_ msg: @autoclosure () -> String, _ values: Any?...) {
+  @inlinable
+  func info (_ msg: @autoclosure () -> String, _ values: Any?...) {
     primaryLog(.Info, msg, values)
   }
-  public func trace(_ msg: @autoclosure () -> String, _ values: Any?...) {
+  @inlinable
+  func trace(_ msg: @autoclosure () -> String, _ values: Any?...) {
     primaryLog(.Trace, msg, values)
   }
   
-  public func dir(_ obj: Any?) {
+  func dir(_ obj: Any?) {
     // TODO: implement more
     if let obj = obj {
       log("\(obj)")

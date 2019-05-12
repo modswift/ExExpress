@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2017 ZeeZide GmbH, All Rights Reserved
+// Copyright (C) 2017-2019 ZeeZide GmbH, All Rights Reserved
 // Created by Helge Hess on 26/01/2017.
 //
 
@@ -23,7 +23,7 @@ public protocol ServerResponse : HttpMessageBaseType, WritableByteStreamType {
 
 public extension ServerResponse {
 
-  public func writeHead(_ statusCode: Int) {
+  func writeHead(_ statusCode: Int) {
     writeHead(statusCode, [:])
   }
 

@@ -3,7 +3,7 @@
 //  Noze.io
 //
 //  Created by Helge Hess on 10/06/16.
-//  Copyright © 2016 ZeeZide GmbH. All rights reserved.
+//  Copyright © 2016-2019 ZeeZide GmbH. All rights reserved.
 //
 
 fileprivate struct buckets {
@@ -30,7 +30,7 @@ public extension WritableByteStreamType {
 
   // MARK: - JSON generator
 
-  public func writeJSON(string s: String) throws {
+  func writeJSON(string s: String) throws {
     let utf8 = s.utf8
     
     // Well, in theory we could directly escape into the target buffer? No
@@ -63,7 +63,7 @@ public extension WritableByteStreamType {
     try writev(buckets: [ buckets.quote, bucket, buckets.quote ], done: nil)
   }
   
-  public func writeJSON(object o: JSON) throws {
+  func writeJSON(object o: JSON) throws {
     // FIXME: This should be an on-demand stream
     
     switch o {
