@@ -86,6 +86,7 @@
 		E85911871E8EC0D10061B209 /* RoutePattern.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RoutePattern.swift; path = Sources/ExExpress/express/RoutePattern.swift; sourceTree = SOURCE_ROOT; };
 		E8773E0E1EB7ED6D00BB738D /* QueryStringTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QueryStringTests.swift; sourceTree = "<group>"; };
 		E8773E111EB7F71A00BB738D /* QS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = QS.swift; path = Sources/ExExpress/connect/QS.swift; sourceTree = SOURCE_ROOT; };
+		E894B1162302EE9200AB16BB /* Package@swift-5.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Package@swift-5.swift"; sourceTree = "<group>"; };
 		E8AFFF5A1E6F19260074266E /* time.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = time.swift; path = Sources/ExExpress/xsys/time.swift; sourceTree = SOURCE_ROOT; };
 		E8AFFF5B1E6F19260074266E /* timespec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = timespec.swift; path = Sources/ExExpress/xsys/timespec.swift; sourceTree = SOURCE_ROOT; };
 		E8AFFF5C1E6F19260074266E /* timeval_any.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = timeval_any.swift; path = Sources/ExExpress/xsys/timeval_any.swift; sourceTree = SOURCE_ROOT; };
@@ -185,6 +186,7 @@
 			children = (
 				E82359B51E49F311000B3120 /* README.md */,
 				E8E6FE0A1E91D610008814D5 /* Package.swift */,
+				E894B1162302EE9200AB16BB /* Package@swift-5.swift */,
 				E82359291E49F06D000B3120 /* Sources */,
 				E81D11131E8EB7A30085B6E7 /* Tests */,
 				E82359281E49F066000B3120 /* Configurations */,
