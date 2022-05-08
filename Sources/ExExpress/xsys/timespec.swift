@@ -3,7 +3,7 @@
 //  Noze.io
 //
 //  Created by Helge Hess on 31/05/16.
-//  Copyright © 2016-2019 ZeeZide GmbH. All rights reserved.
+//  Copyright © 2016-2022 ZeeZide GmbH. All rights reserved.
 //
 
 #if os(Linux)
@@ -14,12 +14,11 @@ public typealias timeval  = Glibc.timeval
 
 public extension timespec {
   
-  public static func monotonic() -> timespec {
+  static func monotonic() -> timespec {
     var ts = timespec()
     clock_gettime(CLOCK_MONOTONIC, &ts)
     return ts
   }
-  
 }
 
 #else // Darwin
