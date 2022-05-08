@@ -3,7 +3,7 @@
 //  ExExpress
 //
 //  Created by Helge Hess on 02.05.17.
-//  Copyright © 2017 ZeeZide GmbH. All rights reserved.
+//  Copyright © 2017-2022 ZeeZide GmbH. All rights reserved.
 //
 
 public enum qs {
@@ -251,7 +251,7 @@ public enum qs {
 
 // Hm
 
-protocol RefTypeFlatten: class {
+protocol RefTypeFlatten: AnyObject {
   
   func flatten() -> Any
   

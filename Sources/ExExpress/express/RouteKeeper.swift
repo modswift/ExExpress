@@ -3,7 +3,7 @@
 //  Noze.io
 //
 //  Created by Helge Heß on 6/2/16.
-//  Copyright © 2016-2019 ZeeZide GmbH. All rights reserved.
+//  Copyright © 2016-2022 ZeeZide GmbH. All rights reserved.
 //
 
 /**
@@ -15,7 +15,7 @@
  * The primary purpose of this protocol is to decouple all the convenience 
  * `use`, `get` etc functions from the actual functionality: `add(route:)`.
  */
-public protocol RouteKeeper: class {
+public protocol RouteKeeper: AnyObject {
   
   func add(route e: Route)
   
