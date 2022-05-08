@@ -3,10 +3,10 @@
 //  ExExpress
 //
 //  Created by Helge Hess on 07/02/17.
-//  Copyright © 2017-2019 ZeeZide GmbH. All rights reserved.
+//  Copyright © 2017-2022 ZeeZide GmbH. All rights reserved.
 //
 
-public protocol GWritableStreamType : class, WritableStreamType {
+public protocol GWritableStreamType : AnyObject, WritableStreamType {
   
   associatedtype WriteType
   

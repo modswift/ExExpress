@@ -1,9 +1,12 @@
 //
-// Copyright (C) 2017 ZeeZide GmbH, All Rights Reserved
-// Created by Helge Hess on 26/01/2017.
+//  GWritableStreamType.swift
+//  ExExpress
+//
+//  Created by Helge Hess on 26/01/2017.
+//  Copyright © 2017-2022 ZeeZide GmbH. All rights reserved.
 //
 
-public protocol HttpMessageBaseType : class {
+public protocol HttpMessageBaseType : AnyObject {
 
   var log   : ConsoleType      { get }
   

@@ -1,6 +1,9 @@
 //
-// Copyright (C) 2017-2019 ZeeZide GmbH, All Rights Reserved
-// Created by Helge Hess on 26/01/2017.
+//  fs_module.swift
+//  Noze.io
+//
+//  Created by Helge Hess on 26/01/2017.
+//  Copyright © 2017-2022 ZeeZide GmbH. All rights reserved.
 //
 
 #if os(Linux)
@@ -63,11 +66,8 @@ public enum fs {
     
     #if os(Linux) // Linux 3.0.2 compiles but doesn't have contentsOfFile ...
       let url  = Foundation.URL(fileURLWithPath: path)
-      guard var data = try? Data(contentsOf: url) else { return nil }
-      data.append(0) // 0 terminator
-      return data.withUnsafeBytes { (ptr : UnsafePointer<UInt8>) -> String in
-        return String(cString: ptr)
-      }
+      guard let data = try? Data(contentsOf: url) else { return nil }
+      return String(data: data, encoding: .utf8)
     #else
       guard let s = try? String(contentsOfFile: path) else { return nil }
       return s
