@@ -4,7 +4,7 @@
 //  ExExpress
 //
 //  Created by Helge Hess on 11.05.18.
-//  Copyright © 2019 ZeeZide. All rights reserved.
+//  Copyright © 2019-2022 ZeeZide. All rights reserved.
 //
 import PackageDescription
 
@@ -17,7 +17,7 @@ let package = Package(
   
   dependencies: [
     .package(url: "https://github.com/AlwaysRightInstitute/mustache.git",
-             from: "0.5.9"),
+             from: "1.0.1"),
     .package(url: "https://github.com/modswift/Freddy.git",
              from: "3.0.58")
   ],
